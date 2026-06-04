@@ -77,6 +77,21 @@ Se puede empaquetar esta misma PWA como APK con un **Trusted Web Activity (TWA)*
 (p. ej. Bubblewrap) y publicarla en Play Store, **sin reescribir la app**. Queda
 como opción de Fase 3 si surge la necesidad.
 
+## Actualización / recuperación de la PWA instalada
+
+- El service worker se **auto-actualiza**: al abrir la PWA, el navegador detecta
+  el `sw.js` nuevo, lo instala y en `activate` **purga las versiones de caché
+  anteriores** (el nombre de caché está versionado, p. ej. `moto-control-v2`).
+- Solo se cachean respuestas **200 válidas de mismo origen** (nunca 404 ni
+  redirects), para evitar "envenenar" el caché durante un redeploy — esa era la
+  causa de un crash que aparecía solo en la PWA (ChunkLoadError).
+- Si una PWA quedó en mal estado por una versión vieja: **cierra y vuelve a
+  abrir** la app un par de veces (para que tome el SW nuevo) o, si persiste,
+  desinstálala y vuelve a agregarla a la pantalla de inicio (o borra los datos
+  del sitio en el navegador).
+- Cualquier error de cliente ahora se muestra **controlado** ("Algo salió mal" +
+  Reintentar) en vez del mensaje crudo de Next.
+
 ## Ajustes antes de entregar
 
 - Cambiar `name` / `short_name` / `description` en `public/manifest.webmanifest`.

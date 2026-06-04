@@ -1,7 +1,12 @@
-"use client";
-
 import { Bike, RefreshCw, WifiOff } from "lucide-react";
 
+export const metadata = { title: "Sin conexión" };
+
+/**
+ * Offline fallback. Server component with a plain anchor so it works even
+ * without hydration (when JS chunks aren't cached). "Reintentar" navigates back
+ * to the app — if still offline the SW serves this page again.
+ */
 export default function OfflinePage() {
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-background px-6 text-center">
@@ -24,13 +29,12 @@ export default function OfflinePage() {
         de la flota. Revisa tu conexión e intenta de nuevo.
       </p>
 
-      <button
-        type="button"
-        onClick={() => window.location.reload()}
+      <a
+        href="/app/dashboard"
         className="mt-6 inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-brand px-5 text-sm font-semibold text-black transition-colors hover:bg-brand-400"
       >
         <RefreshCw className="h-4 w-4" /> Reintentar
-      </button>
+      </a>
     </div>
   );
 }

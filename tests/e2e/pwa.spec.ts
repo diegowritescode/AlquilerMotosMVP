@@ -15,10 +15,10 @@ test.describe("PWA", () => {
     expect(body.icons.length).toBeGreaterThanOrEqual(2);
   });
 
-  test("la página /offline carga con mensaje y botón Reintentar", async ({ page }) => {
+  test("la página /offline carga con mensaje y acción Reintentar", async ({ page }) => {
     await page.goto("/offline");
     await expect(page.getByText(/Sin conexión a internet/i)).toBeVisible();
-    await expect(page.getByRole("button", { name: /Reintentar/i })).toBeVisible();
+    await expect(page.getByRole("link", { name: /Reintentar/i })).toBeVisible();
   });
 
   test("los íconos PWA se sirven", async ({ page }) => {

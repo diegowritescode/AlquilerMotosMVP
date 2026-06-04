@@ -8,7 +8,10 @@
  *    Supabase, signed URLs, PDFs, documentos privados): passthrough sin caché.
  *  - Cross-origin (Supabase, Storage, signed URLs): se ignora por completo.
  */
-const CACHE = "moto-control-v1";
+// v2: solo cachea respuestas 200 válidas (evita "envenenar" el caché con un 404
+// servido durante un redeploy, que rompía la PWA con ChunkLoadError). El bump de
+// versión purga automáticamente el caché v1 en activate.
+const CACHE = "moto-control-v2";
 const PRECACHE = [
   "/offline",
   "/manifest.webmanifest",
@@ -62,11 +65,17 @@ self.addEventListener("fetch", (event) => {
       caches.match(req).then(
         (cached) =>
           cached ||
-          fetch(req).then((res) => {
-            const copy = res.clone();
-            caches.open(CACHE).then((c) => c.put(req, copy));
-            return res;
-          }),
+          fetch(req)
+            .then((res) => {
+              // Cachea SOLO respuestas exitosas y de mismo origen (basic).
+              // Nunca cachear 404/redirects/opacas (causaban ChunkLoadError).
+              if (res && res.status === 200 && res.type === "basic") {
+                const copy = res.clone();
+                caches.open(CACHE).then((c) => c.put(req, copy));
+              }
+              return res;
+            })
+            .catch(() => cached),
       ),
     );
     return;
