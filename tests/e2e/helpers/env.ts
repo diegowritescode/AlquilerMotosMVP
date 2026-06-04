@@ -10,10 +10,26 @@
 
 export const E2E = {
   baseURL: process.env.E2E_BASE_URL || "http://localhost:3100",
-  // Default to the demo admin credentials so the suite runs out-of-the-box in
-  // demo mode. Override for real Supabase Auth.
+
+  // Usuario principal usado por auth.setup.ts para crear storageState global.
+  // IMPORTANTE: este usuario NO debe usarse en tests de logout en Supabase real,
+  // porque signOut puede invalidar la sesión global compartida.
   adminEmail: process.env.E2E_ADMIN_EMAIL || "admin@motorental.co",
   adminPassword: process.env.E2E_ADMIN_PASSWORD || "demo1234",
+
+  // Usuario separado recomendado para auth.spec.ts.
+  // Debe existir en Supabase Auth y tener role='admin' en public.profiles.
+  // Si no se configura, cae al usuario admin para mantener compatibilidad demo.
+  authEmail:
+    process.env.E2E_AUTH_EMAIL ||
+    process.env.E2E_ADMIN_EMAIL ||
+    "admin@motorental.co",
+
+  authPassword:
+    process.env.E2E_AUTH_PASSWORD ||
+    process.env.E2E_ADMIN_PASSWORD ||
+    "demo1234",
+
   prefix: process.env.E2E_TEST_PREFIX || "E2E",
   supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL || "",
   serviceRoleKey: process.env.E2E_SUPABASE_SERVICE_ROLE_KEY || "",

@@ -17,8 +17,8 @@ dotenv.config({ path: ".env" });
  * Default port is 3100 to avoid clashing with another app on 3000. Override the
  * whole URL with E2E_BASE_URL.
  */
-const baseURL = process.env.E2E_BASE_URL || "http://localhost:3100";
-const port = Number(new URL(baseURL).port || "3100");
+const baseURL = process.env.E2E_BASE_URL || "http://localhost:3001";
+const port = Number(new URL(baseURL).port || "3001");
 
 export default defineConfig({
   testDir: "./tests/e2e",
