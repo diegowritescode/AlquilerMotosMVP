@@ -15,6 +15,8 @@ test.describe.serial("Arrendatarios / clientes", () => {
 
   test("crear cliente E2E y redirige al detalle", async ({ page }) => {
     await page.goto("/app/customers/new");
+    // El formulario de creación incluye el campo de foto de la licencia.
+    await expect(page.getByLabel(/Foto de la licencia/i)).toBeVisible();
     await fillCustomerForm(page, cust);
     await page.getByRole("button", { name: "Crear cliente" }).click();
 

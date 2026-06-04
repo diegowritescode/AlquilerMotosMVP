@@ -174,6 +174,7 @@ export async function listExpirations(): Promise<ExpirationItem[]> {
       date: p.due_date,
       daysLeft: d,
       customerId: p.customer_id,
+      paymentId: p.id,
       amount: p.amount,
     });
   }

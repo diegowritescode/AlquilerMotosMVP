@@ -90,6 +90,15 @@ export const motorcycleSchema = z.object({
 });
 export type MotorcycleInput = z.infer<typeof motorcycleSchema>;
 
+/** Focused schema to update only a motorcycle's document/expiration dates. */
+export const motorcycleExpirationsSchema = z.object({
+  soat_expiration: optionalDate,
+  tecnomecanica_expiration: optionalDate,
+  tax_expiration: optionalDate,
+  next_oil_change_date: optionalDate,
+  next_oil_change_mileage: optionalNumber,
+});
+
 // ---------------------------------------------------------------------------
 // Customer
 // ---------------------------------------------------------------------------

@@ -1,5 +1,5 @@
 import { listCustomers } from "@/lib/data/customers";
-import { listRentals } from "@/lib/data/rentals";
+import { activeRentalsByCustomer } from "@/lib/data/rentals";
 import { PageHeader } from "@/components/app/page-header";
 import { EmptyState } from "@/components/app/empty-state";
 import { PaymentForm } from "../payment-form";
@@ -11,11 +11,11 @@ export const metadata = { title: "Registrar pago" };
 export default async function NewPaymentPage({
   searchParams,
 }: {
-  searchParams: { customer?: string; rental?: string };
+  searchParams: { customer?: string };
 }) {
-  const [customers, rentals] = await Promise.all([
+  const [customers, activeRentals] = await Promise.all([
     listCustomers(),
-    listRentals(),
+    activeRentalsByCustomer(),
   ]);
 
   if (customers.length === 0) {
@@ -39,10 +39,9 @@ export default async function NewPaymentPage({
       <PaymentForm
         action={createPaymentAction}
         customers={customers}
-        rentals={rentals}
+        activeRentals={activeRentals}
         submitLabel="Registrar pago"
         defaultCustomerId={searchParams.customer}
-        defaultRentalId={searchParams.rental}
       />
     </div>
   );

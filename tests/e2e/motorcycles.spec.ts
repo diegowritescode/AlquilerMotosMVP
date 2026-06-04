@@ -25,6 +25,11 @@ test.describe.serial("Motocicletas", () => {
       page.getByRole("heading", { name: `${moto.brand} ${moto.model}` }),
     ).toBeVisible();
     await expect(page.getByText(`Placa ${moto.plate}`)).toBeVisible();
+    // Editor de vencimientos disponible en el detalle.
+    await expect(
+      page.getByRole("heading", { name: "Documentos y vencimientos" }),
+    ).toBeVisible();
+    await expect(page.getByText("Actualizar fechas")).toBeVisible();
   });
 
   test("la moto aparece en el listado (búsqueda por placa)", async ({ page }) => {

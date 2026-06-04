@@ -8,6 +8,9 @@ test.describe("Vencimientos y reportes", () => {
     ).toBeVisible();
     await expect(page.locator("nextjs-portal")).toHaveCount(0);
 
+    // Ayuda de resolución visible.
+    await expect(page.getByText(/Toca una alerta para resolverla/i)).toBeVisible();
+
     // Hay datos semilla con vencidos/próximos: debe verse al menos un grupo o
     // el estado vacío "Todo al día".
     const groups = page.getByText(

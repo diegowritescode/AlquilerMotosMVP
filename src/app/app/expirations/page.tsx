@@ -24,6 +24,23 @@ function tone(daysLeft: number): Tone {
   return "success";
 }
 
+/** Where to go to RESOLVE each kind of expiration. */
+function hrefFor(e: ExpirationItem): string | undefined {
+  if (e.kind === "pago") {
+    return e.paymentId ? `/app/payments/${e.paymentId}` : undefined;
+  }
+  // Documentos y mantenimiento: en la ficha de la moto (allí se actualizan
+  // las fechas / se ve el historial).
+  return e.motorcycleId ? `/app/motorcycles/${e.motorcycleId}` : undefined;
+}
+
+/** Tiny hint on how to mark it resolved. */
+function actionHintFor(kind: ExpirationItem["kind"]): string {
+  if (kind === "pago") return " · toca para marcar pagado";
+  if (kind === "mantenimiento") return " · toca para ver la moto";
+  return " · toca para actualizar la fecha";
+}
+
 function Group({
   title,
   items,
@@ -44,15 +61,9 @@ function Group({
         {items.map((e) => (
           <AlertCard
             key={e.id}
-            href={
-              e.motorcycleId
-                ? `/app/motorcycles/${e.motorcycleId}`
-                : e.customerId
-                  ? `/app/customers/${e.customerId}`
-                  : undefined
-            }
+            href={hrefFor(e)}
             title={`${KIND_LABEL[e.kind] ?? e.kind} · ${e.subtitle}`}
-            subtitle={`${formatDate(e.date)} · ${relativeExpiry(e.date)}${e.amount ? ` · ${formatCOP(e.amount)}` : ""}`}
+            subtitle={`${formatDate(e.date)} · ${relativeExpiry(e.date)}${e.amount ? ` · ${formatCOP(e.amount)}` : ""}${actionHintFor(e.kind)}`}
             badgeLabel={e.daysLeft < 0 ? "Vencido" : `${e.daysLeft}d`}
             tone={tone(e.daysLeft)}
           />
@@ -78,6 +89,12 @@ export default async function ExpirationsPage() {
         title="Vencimientos y alertas"
         subtitle="SOAT, tecnomecánica, impuestos, aceite, mantenimiento y pagos"
       />
+
+      <p className="rounded-xl border border-border bg-surface px-3.5 py-2.5 text-xs text-muted">
+        Toca una alerta para resolverla: los <strong>documentos</strong> se
+        renuevan actualizando su fecha en la ficha de la moto; un{" "}
+        <strong>pago</strong> se marca como pagado en su detalle.
+      </p>
 
       {!hasAny ? (
         <div className="flex items-center gap-2 rounded-2xl border border-border bg-surface px-4 py-6 text-sm text-muted">

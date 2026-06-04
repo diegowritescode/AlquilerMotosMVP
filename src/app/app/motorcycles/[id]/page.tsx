@@ -7,7 +7,10 @@ import { getCustomer } from "@/lib/data/customers";
 import { listMaintenance } from "@/lib/data/maintenance";
 import { listFines } from "@/lib/data/fines";
 import { listMotorcyclePhotos } from "@/lib/data/motorcycle-photos";
-import { deleteMotorcycleAction } from "@/lib/actions/motorcycles";
+import {
+  deleteMotorcycleAction,
+  updateMotorcycleExpirationsAction,
+} from "@/lib/actions/motorcycles";
 import {
   uploadMotorcyclePhotoAction,
   deleteMotorcyclePhotoAction,
@@ -28,8 +31,7 @@ import {
   RENTAL_STATUS_LABELS,
   RENTAL_STATUS_TONE,
 } from "@/lib/constants";
-import { formatCOP, formatDate, relativeExpiry } from "@/lib/utils";
-import type { Tone } from "@/lib/utils";
+import { formatCOP, formatDate } from "@/lib/utils";
 import { PageHeader } from "@/components/app/page-header";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -38,14 +40,7 @@ import { InfoList } from "@/components/app/info-list";
 import { AlertCard } from "@/components/app/alert-card";
 import { LinkButton } from "@/components/ui/button";
 import { DeleteButton } from "@/components/app/delete-button";
-
-function expTone(date?: string | null): Tone {
-  const d = date ? Math.ceil((new Date(date).getTime() - Date.now()) / 86400000) : null;
-  if (d === null) return "neutral";
-  if (d < 0) return "danger";
-  if (d <= 7) return "warning";
-  return "success";
-}
+import { ExpirationsEditor } from "@/components/app/expirations-editor";
 
 export default async function MotorcycleDetailPage({
   params,
@@ -76,14 +71,8 @@ export default async function MotorcycleDetailPage({
     ? await getCustomer(activeRental.customer_id)
     : null;
 
-  const expirations = [
-    { label: "SOAT", date: moto.soat_expiration },
-    { label: "Tecnomecánica", date: moto.tecnomecanica_expiration },
-    { label: "Impuestos", date: moto.tax_expiration },
-    { label: "Cambio de aceite", date: moto.next_oil_change_date },
-  ].filter((e) => e.date);
-
   const deleteAction = deleteMotorcycleAction.bind(null, moto.id);
+  const updateExpirations = updateMotorcycleExpirationsAction.bind(null, moto.id);
 
   return (
     <div className="space-y-5">
@@ -212,25 +201,22 @@ export default async function MotorcycleDetailPage({
         </Card>
       ) : null}
 
-      {/* Expirations */}
+      {/* Expirations (editable: renovar documentos sin abrir el form completo) */}
       <Card>
         <CardHeader>
-          <CardTitle>Próximos vencimientos</CardTitle>
+          <CardTitle>Documentos y vencimientos</CardTitle>
         </CardHeader>
-        <CardContent className="space-y-2">
-          {expirations.length === 0 ? (
-            <p className="text-sm text-muted">Sin fechas de vencimiento registradas.</p>
-          ) : (
-            expirations.map((e) => (
-              <AlertCard
-                key={e.label}
-                title={e.label}
-                subtitle={`Vence ${formatDate(e.date)}`}
-                badgeLabel={relativeExpiry(e.date)}
-                tone={expTone(e.date)}
-              />
-            ))
-          )}
+        <CardContent>
+          <ExpirationsEditor
+            action={updateExpirations}
+            values={{
+              soat_expiration: moto.soat_expiration ?? null,
+              tecnomecanica_expiration: moto.tecnomecanica_expiration ?? null,
+              tax_expiration: moto.tax_expiration ?? null,
+              next_oil_change_date: moto.next_oil_change_date ?? null,
+              next_oil_change_mileage: moto.next_oil_change_mileage ?? null,
+            }}
+          />
         </CardContent>
       </Card>
 

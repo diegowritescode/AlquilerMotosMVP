@@ -234,5 +234,6 @@ export interface ExpirationItem {
   daysLeft: number;
   motorcycleId?: string;
   customerId?: string;
+  paymentId?: string;
   amount?: number;
 }

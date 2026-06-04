@@ -3,7 +3,7 @@ import type { RentalInput } from "../schemas";
 import { getMockDB } from "../mock/store";
 import { todayISO, uuid } from "../utils";
 import { getDataClient, unwrap } from "./db";
-import { setMotorcycleStatus } from "./motorcycles";
+import { setMotorcycleStatus, listMotorcycles } from "./motorcycles";
 
 const TABLE = "rentals";
 const active = (r: Rental) => !r.deleted_at;
@@ -26,6 +26,26 @@ export async function listRentals(opts?: {
   if (opts?.motorcycleId) query = query.eq("motorcycle_id", opts.motorcycleId);
   const res = await query.order("start_date", { ascending: false });
   return unwrap(res, "listRentals") as Rental[];
+}
+
+/** Active rental per customer: { customerId: {id, label} }. For payment forms. */
+export async function activeRentalsByCustomer(): Promise<
+  Record<string, { id: string; label: string }>
+> {
+  const [rentals, motos] = await Promise.all([
+    listRentals({ status: "activo" }),
+    listMotorcycles(),
+  ]);
+  const motoMap = new Map(motos.map((m) => [m.id, m]));
+  const map: Record<string, { id: string; label: string }> = {};
+  for (const r of rentals) {
+    const m = motoMap.get(r.motorcycle_id);
+    map[r.customer_id] = {
+      id: r.id,
+      label: m ? `${m.brand} ${m.model} · ${m.plate}` : "Alquiler activo",
+    };
+  }
+  return map;
 }
 
 export async function getRental(id: string): Promise<Rental | null> {

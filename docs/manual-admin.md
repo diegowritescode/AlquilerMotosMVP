@@ -38,7 +38,9 @@ Para salir, usa el botón **Salir** en la parte superior.
 
 1. Toca **Más → Arrendatarios → + Agregar** (o acción rápida **Nuevo cliente**).
 2. Completa nombre, tipo y número de documento, teléfono y dirección.
-3. Agrega la **licencia** (número y categoría) si la tienes.
+3. Agrega la **licencia** (número y categoría) si la tienes. En el mismo
+   formulario puedes adjuntar la **foto de la licencia** (opcional). Más
+   documentos se suben después desde la ficha del arrendatario.
 4. Toca **Crear cliente**.
 
 Desde la ficha del cliente puedes **escribirle por WhatsApp** con un toque.
@@ -80,7 +82,9 @@ Para **finalizar**: entra al alquiler → en *Gestión*, elige si la moto queda
 > Nequi, Bancolombia). Aquí solo **registras lo recibido** para llevar el control.
 
 1. Toca **Más → Pagos → Registrar** (o desde la ficha del cliente/alquiler).
-2. Elige el arrendatario y, si aplica, el alquiler.
+2. Elige el arrendatario. Si tiene un **alquiler activo**, se asocia
+   automáticamente (lo verás como "Alquiler asociado"); si no, el pago queda sin
+   alquiler. No tienes que elegirlo de una lista.
 3. Escribe el **monto**, el **método** (efectivo, transferencia, Nequi,
    Bancolombia) y el **estado**.
 4. Toca **Registrar pago**.
@@ -134,7 +138,13 @@ hoy**.
 - Toca **Vencimientos** en la barra inferior.
 - Verás todo agrupado en **Vencidos**, **Próximos 7 / 15 / 30 días**:
   SOAT, tecnomecánica, impuestos, cambio de aceite, mantenimientos y pagos.
-- Toca cualquier alerta para ir directo a la moto o al cliente.
+- **Para resolver una alerta**, tócala:
+  - **Documentos** (SOAT, tecnomecánica, impuestos, aceite): te lleva a la moto.
+    En **Documentos y vencimientos → Actualizar fechas** pones la nueva fecha (al
+    renovar) y deja de aparecer como vencido. Ya no necesitas abrir el formulario
+    completo de la moto.
+  - **Pago**: te lleva al pago, donde lo marcas como **pagado**.
+  - **Mantenimiento**: te lleva a la moto para registrar/ver el servicio.
 
 ---
 

@@ -2,7 +2,11 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { motorcycleSchema, formToObject } from "@/lib/schemas";
+import {
+  motorcycleSchema,
+  motorcycleExpirationsSchema,
+  formToObject,
+} from "@/lib/schemas";
 import {
   createMotorcycle,
   deleteMotorcycle,
@@ -52,6 +56,28 @@ export async function updateMotorcycleAction(
   revalidatePath("/app/motorcycles");
   revalidatePath(`/app/motorcycles/${id}`);
   redirect(`/app/motorcycles/${id}`);
+}
+
+/** Update ONLY the document/expiration dates (intuitive "renovar" from detail). */
+export async function updateMotorcycleExpirationsAction(
+  id: string,
+  _prev: ActionState & { success?: boolean },
+  formData: FormData,
+): Promise<ActionState & { success?: boolean }> {
+  const parsed = motorcycleExpirationsSchema.safeParse(formToObject(formData));
+  if (!parsed.success) return parseErrors(parsed.error);
+
+  const moto = await updateMotorcycle(id, parsed.data);
+  if (!moto) return { error: "Moto no encontrada." };
+  await recordAudit({
+    entityType: "motorcycle",
+    entityId: id,
+    action: "actualizar_vencimientos",
+  });
+  revalidatePath(`/app/motorcycles/${id}`);
+  revalidatePath("/app/expirations");
+  revalidatePath("/app/dashboard");
+  return { success: true };
 }
 
 export async function deleteMotorcycleAction(id: string): Promise<void> {

@@ -11,7 +11,6 @@ test.describe.serial("Pagos manuales", () => {
   const moto = motorcycleData();
   const cust = customerData();
   let custId = "";
-  let rentalId = "";
 
   test("preparar cliente, moto y alquiler", async ({ page }) => {
     await page.goto("/app/motorcycles/new");
@@ -34,13 +33,13 @@ test.describe.serial("Pagos manuales", () => {
     await page.getByLabel("Estado").selectOption("activo");
     await page.getByRole("button", { name: "Crear alquiler" }).click();
     await page.waitForURL(/\/app\/rentals\/[0-9a-fA-F-]+$/);
-    rentalId = page.url().split("/").pop()!;
   });
 
-  test("crear pago asociado a alquiler y cliente", async ({ page }) => {
-    await page.goto(`/app/payments/new?customer=${custId}&rental=${rentalId}`);
+  test("crear pago asocia automáticamente el alquiler activo del arrendatario", async ({ page }) => {
+    await page.goto(`/app/payments/new?customer=${custId}`);
     await page.getByLabel("Arrendatario").selectOption(custId);
-    await page.getByLabel("Alquiler (opcional)").selectOption(rentalId);
+    // El alquiler activo se detecta solo: se muestra como "Alquiler asociado".
+    await expect(page.getByText("Alquiler asociado")).toBeVisible();
     await page.getByLabel("Monto (COP)").fill("150000");
     await page.getByLabel("Método").selectOption("nequi");
     await page.getByLabel("Estado").selectOption("pendiente");

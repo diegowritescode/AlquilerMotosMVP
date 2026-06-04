@@ -4,6 +4,7 @@ import { useFormState } from "react-dom";
 import type { Customer } from "@/lib/types";
 import { DOCUMENT_TYPES, LICENSE_CATEGORIES } from "@/lib/types";
 import type { ActionState } from "@/lib/actions/shared";
+import { FILE_ACCEPT } from "@/lib/upload";
 import { Field, Input, Select, Textarea, FormSection } from "@/components/ui/form";
 import { SubmitButton } from "@/components/app/submit-button";
 import { FormMessage } from "@/components/app/form-message";
@@ -70,6 +71,27 @@ export function CustomerForm({
             ))}
           </Select>
         </Field>
+        {!c ? (
+          <Field
+            label="Foto de la licencia (opcional)"
+            htmlFor="license_file"
+            hint="JPG, PNG, WEBP o PDF, hasta 5 MB. Podrás agregar más documentos desde la ficha del arrendatario."
+            className="sm:col-span-2"
+          >
+            <input
+              id="license_file"
+              name="license_file"
+              type="file"
+              accept={FILE_ACCEPT}
+              className="block w-full text-sm text-muted file:mr-3 file:rounded-lg file:border-0 file:bg-surface-3 file:px-3 file:py-2 file:text-sm file:font-medium file:text-foreground hover:file:bg-surface-3/80"
+            />
+          </Field>
+        ) : (
+          <p className="text-xs text-muted sm:col-span-2">
+            Para subir/gestionar la foto de la licencia y otros documentos, usa la
+            sección <strong>Documentos</strong> en la ficha del arrendatario.
+          </p>
+        )}
       </FormSection>
 
       <FormSection title="Información adicional">
