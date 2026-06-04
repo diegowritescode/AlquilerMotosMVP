@@ -21,6 +21,7 @@ import { isImageType } from "@/lib/upload";
 import { FileUploadField } from "@/components/upload/FileUploadField";
 import { DocumentList } from "@/components/upload/DocumentList";
 import { RentalContractSection } from "@/components/upload/RentalContractSection";
+import { ConfirmSubmit } from "@/components/app/confirm-submit";
 import {
   PAYMENT_FREQUENCY_LABELS,
   PAYMENT_STATUS_LABELS,
@@ -276,13 +277,12 @@ export default async function RentalDetailPage({
               </div>
             </form>
 
-            <form action={changeRentalStatusAction}>
-              <input type="hidden" name="rental_id" value={rental.id} />
-              <input type="hidden" name="status" value="cancelado" />
-              <Button type="submit" variant="ghost" size="sm" className="text-danger hover:bg-danger/10">
-                Cancelar alquiler
-              </Button>
-            </form>
+            <ConfirmSubmit
+              action={changeRentalStatusAction}
+              hidden={{ rental_id: rental.id, status: "cancelado" }}
+              label="Cancelar alquiler"
+              confirmText="¿Cancelar este alquiler? La moto volverá a disponible."
+            />
           </CardContent>
         </Card>
       ) : null}

@@ -20,8 +20,7 @@ export function LoginForm() {
           name="email"
           type="email"
           autoComplete="email"
-          placeholder="admin@motorental.co"
-          defaultValue="admin@motorental.co"
+          placeholder="tucorreo@dominio.com"
           required
         />
       </Field>

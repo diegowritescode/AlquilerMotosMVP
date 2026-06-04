@@ -27,11 +27,16 @@ Recorre esta lista **antes** de presentar al cliente. Marca cada punto.
       prefijo `NEXT_PUBLIC_` ni en el cliente.
 - [ ] Variables **E2E_\*** (incl. `E2E_SUPABASE_SERVICE_ROLE_KEY`,
       `E2E_ALLOW_DB_CLEANUP`) **no** están configuradas en producción.
-- [ ] **Buckets de Storage privados**: `motorcycle-photos`,
-      `customer-documents`, `payment-evidence`, `fine-evidence`.
+- [ ] **Buckets de Storage privados** (todos): `motorcycle-photos`,
+      `customer-documents`, `payment-evidence`, `fine-evidence`,
+      `rental-evidence`, `rental-contracts`. Archivos solo vía **URLs firmadas**.
 - [ ] Contraseña del admin **fuerte** (no `demo1234`).
-- [ ] Usuario(s) de prueba **separados** del admin de producción.
-- [ ] La service-role usada por las pruebas es **distinta** y no se versiona.
+- [ ] El usuario de QA (`auth-test@motorental.co` u otro de pruebas) es
+      **solo para staging/QA**: elimínalo o desactívalo en el Supabase de
+      producción real; no debe quedar como cuenta operativa/backdoor.
+- [ ] La service-role usada por las pruebas (`E2E_SUPABASE_SERVICE_ROLE_KEY`) es
+      **distinta** y no se versiona.
+- [ ] El seed/demo usa **datos ficticios** (sin personas reales).
 
 ## Integraciones
 

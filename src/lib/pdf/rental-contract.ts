@@ -88,10 +88,10 @@ function wrap(text: string, maxChars: number): string[] {
 
 const CONDITIONS = [
   "El arrendatario recibe la motocicleta en el estado descrito en este documento.",
-  "El arrendatario se compromete a responder por los danos ocasionados a la motocicleta durante el periodo de uso.",
-  "El arrendatario se compromete a responder por multas, comparendos o fotomultas generadas durante el periodo de uso, sujeto a validacion del administrador.",
-  "Los pagos se acuerdan y gestionan por fuera del sistema; esta plataforma registra unicamente el control interno.",
-  "Este documento es un soporte operativo y debe ser revisado por un asesor legal antes de usarse como contrato legal definitivo.",
+  "El arrendatario se compromete a responder por los daños ocasionados a la motocicleta durante el periodo de uso.",
+  "El arrendatario se compromete a responder por multas, comparendos o fotomultas generadas durante el periodo de uso, sujeto a validación del administrador.",
+  "Los pagos se acuerdan y gestionan por fuera del sistema; esta plataforma registra únicamente el control interno y no procesa cobros.",
+  "Este documento es un soporte operativo y debe ser revisado por un asesor legal antes de usarse como contrato legal definitivo. No constituye firma digital.",
 ];
 
 export async function generateRentalContractPdf(
@@ -164,7 +164,7 @@ export async function generateRentalContractPdf(
   heading("Datos de la motocicleta");
   row("Marca / Modelo", `${data.moto.brand} ${data.moto.model}`);
   row("Placa", data.moto.plate);
-  row("Cilindraje / Ano", `${data.moto.cc} cc  /  ${data.moto.year}`);
+  row("Cilindraje / Año", `${data.moto.cc} cc  /  ${data.moto.year}`);
   row("Kilometraje", `${data.moto.mileage.toLocaleString("es-CO")} km`);
   row("Estado general", CONDITION_LABELS[data.moto.general_condition] ?? data.moto.general_condition);
   row("Estado motor", CONDITION_LABELS[data.moto.engine_condition] ?? data.moto.engine_condition);
@@ -174,8 +174,8 @@ export async function generateRentalContractPdf(
   heading("Datos del arrendatario");
   row("Nombre", data.customer.full_name);
   row("Documento", `${data.customer.document_type} ${data.customer.document_number}`);
-  row("Telefono", data.customer.phone);
-  if (data.customer.address) row("Direccion", data.customer.address);
+  row("Teléfono", data.customer.phone);
+  if (data.customer.address) row("Dirección", data.customer.address);
   if (data.customer.license_number)
     row("Licencia", `${data.customer.license_number}${data.customer.license_category ? ` (${data.customer.license_category})` : ""}`);
 
