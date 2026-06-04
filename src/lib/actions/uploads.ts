@@ -24,7 +24,7 @@ import {
   listRentalContracts,
 } from "@/lib/data/rental-contracts";
 import { generateRentalContractPdf } from "@/lib/pdf/rental-contract";
-import { BUSINESS_NAME } from "@/lib/constants";
+import { getBusinessSettings } from "@/lib/data/business-settings";
 import { formatDate } from "@/lib/utils";
 import {
   createMotorcyclePhoto,
@@ -275,13 +275,25 @@ export async function generateRentalContractAction(
     return { error: "Faltan datos de la moto o el arrendatario." };
   }
 
-  const existing = await listRentalContracts(rentalId);
+  const [existing, settings] = await Promise.all([
+    listRentalContracts(rentalId),
+    getBusinessSettings(),
+  ]);
   const version = (existing[0]?.version ?? 0) + 1;
 
   let bytes: Uint8Array;
   try {
     bytes = await generateRentalContractPdf({
-      businessName: BUSINESS_NAME,
+      business: {
+        name: settings.business_name,
+        ownerName: settings.owner_name,
+        ownerDocument: settings.owner_document,
+        city: settings.city,
+        address: settings.address,
+        phone: settings.phone,
+        email: settings.email,
+      },
+      customTerms: settings.contract_terms_text,
       generatedAtLabel: format(new Date(), "dd/MM/yyyy HH:mm"),
       moto: {
         brand: moto.brand,

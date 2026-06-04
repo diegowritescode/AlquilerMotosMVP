@@ -4,6 +4,7 @@ import {
   customerSchema,
   rentalSchema,
   paymentSchema,
+  businessSettingsSchema,
 } from "@/lib/schemas";
 
 const validMoto = {
@@ -91,5 +92,25 @@ describe("paymentSchema", () => {
   });
   it("rechaza sin arrendatario", () => {
     expect(paymentSchema.safeParse({ ...base, customer_id: "" }).success).toBe(false);
+  });
+});
+
+describe("businessSettingsSchema", () => {
+  const base = { business_name: "Moto Rental", alert_days_before_expiration: "30" };
+  it("acepta configuración válida y aplica default de currency", () => {
+    const r = businessSettingsSchema.safeParse(base);
+    expect(r.success).toBe(true);
+    if (r.success) expect(r.data.currency).toBe("COP");
+  });
+  it("rechaza nombre vacío", () => {
+    expect(businessSettingsSchema.safeParse({ ...base, business_name: "" }).success).toBe(false);
+  });
+  it("rechaza días de alerta fuera de rango", () => {
+    expect(businessSettingsSchema.safeParse({ ...base, alert_days_before_expiration: "0" }).success).toBe(false);
+    expect(businessSettingsSchema.safeParse({ ...base, alert_days_before_expiration: "400" }).success).toBe(false);
+  });
+  it("rechaza correo inválido", () => {
+    expect(businessSettingsSchema.safeParse({ ...base, email: "no-es-correo" }).success).toBe(false);
+    expect(businessSettingsSchema.safeParse({ ...base, email: "ok@dominio.co" }).success).toBe(true);
   });
 });

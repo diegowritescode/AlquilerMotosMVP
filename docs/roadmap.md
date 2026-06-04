@@ -27,8 +27,10 @@ Enfocada en darle más control interno al administrador.
    buckets privados y URLs firmadas. *(Entregado en 2A.2 — ver docs/storage.md)*
 5. ✅ **Acta / contrato PDF** del alquiler (pdf-lib, versionada). *(2A.3)*
 6. ✅ **Evidencia de entrega y devolución** de la moto (fotos + estado). *(2A.3)*
-7. **Exportación CSV/Excel** de pagos, alquileres y flota.
-8. **Configuración del negocio** (nombre, WhatsApp, valores por defecto).
+7. ✅ **Exportación CSV** de motos, arrendatarios, alquileres, pagos, fotomultas
+   y mantenimientos. *(2A.4 — ver docs/exports.md)*
+8. ✅ **Configuración del negocio** (nombre, propietario, contacto, términos del
+   acta). *(2A.4 — ver docs/business-settings.md)*
 9. **Mejoras de reportes internos** (rentabilidad por moto, mora por cliente).
 
 > El mapa muestra **fotomultas registradas manualmente**. No consulta SIMIT/RUNT

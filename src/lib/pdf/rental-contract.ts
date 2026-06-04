@@ -14,7 +14,17 @@ import {
  */
 
 export interface RentalContractData {
-  businessName: string;
+  business: {
+    name: string;
+    ownerName?: string | null;
+    ownerDocument?: string | null;
+    city?: string | null;
+    address?: string | null;
+    phone?: string | null;
+    email?: string | null;
+  };
+  /** Optional custom terms (one per line); falls back to default conditions. */
+  customTerms?: string | null;
   generatedAtLabel: string; // pre-formatted date string (server passes it)
   moto: {
     brand: string;
@@ -135,8 +145,19 @@ export async function generateRentalContractPdf(
   }
 
   // Header
-  text(sanitize(data.businessName), { size: 16, font: bold, color: brand, gap: 2 });
+  text(sanitize(data.business.name), { size: 16, font: bold, color: brand, gap: 2 });
   text("Acta de entrega y alquiler de motocicleta", { size: 13, font: bold, gap: 2 });
+  const bizLine = [
+    data.business.ownerName,
+    data.business.ownerDocument ? `Doc/NIT ${data.business.ownerDocument}` : null,
+    data.business.city,
+    data.business.address,
+    data.business.phone ? `Tel ${data.business.phone}` : null,
+    data.business.email,
+  ]
+    .filter(Boolean)
+    .join("  ·  ");
+  if (bizLine) text(bizLine, { size: 9, color: rgb(0.4, 0.4, 0.4), gap: 2 });
   text(`Generada: ${data.generatedAtLabel}`, { size: 9, color: rgb(0.4, 0.4, 0.4), gap: 8 });
 
   // Motorcycle
@@ -169,9 +190,14 @@ export async function generateRentalContractPdf(
     for (const l of wrap(`Observaciones: ${data.rental.notes}`, 95)) text(l, { size: 9, gap: 3 });
   }
 
-  // Conditions
+  // Conditions (custom from business settings, or defaults)
   heading("Condiciones operativas");
-  CONDITIONS.forEach((c, i) => {
+  const customLines = (data.customTerms ?? "")
+    .split("\n")
+    .map((l) => l.trim())
+    .filter((l) => l.length > 0);
+  const conditions = customLines.length > 0 ? customLines : CONDITIONS;
+  conditions.forEach((c, i) => {
     for (const l of wrap(`${i + 1}. ${c}`, 95)) text(l, { size: 9, gap: 3 });
     y -= 2;
   });

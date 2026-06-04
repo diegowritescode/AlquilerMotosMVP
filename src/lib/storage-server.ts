@@ -73,6 +73,18 @@ export async function uploadBytesServer(
   return { ok: true, path };
 }
 
+/** Descarga los bytes de un objeto privado (server, service-role). */
+export async function downloadServer(
+  bucket: StorageBucket,
+  path: string,
+): Promise<Uint8Array | null> {
+  const supabase = createSupabaseAdminClient();
+  if (!supabase) return null;
+  const { data, error } = await supabase.storage.from(bucket).download(path);
+  if (error || !data) return null;
+  return new Uint8Array(await data.arrayBuffer());
+}
+
 /** Elimina un objeto del bucket (server, service-role). */
 export async function removeServer(
   bucket: StorageBucket,

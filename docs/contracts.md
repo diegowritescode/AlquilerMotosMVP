@@ -28,6 +28,13 @@ una firma digital.**
 - **Firmas placeholder:** administrador y arrendatario (líneas para firma
   manual; no hay firma digital).
 
+El acta toma los **datos del negocio** desde *Configuración del negocio*
+(`/app/settings/business`): nombre, propietario, documento/NIT, ciudad,
+dirección, teléfono y correo, además de **términos personalizados** (si se
+definen; si no, usa las condiciones por defecto). Ver
+[`business-settings.md`](business-settings.md). Hay fallback a variables de
+entorno si no hay configuración guardada.
+
 ### Cómo se genera
 
 - Botón **"Generar acta PDF"** en el detalle del alquiler.
@@ -40,7 +47,12 @@ una firma digital.**
 ### Dónde se almacena
 
 - Bucket **privado** `rental-contracts`. Se guarda el **storage path** en
-  `rental_contracts.file_path`; la vista/descarga usa una **URL firmada** (1 h).
+  `rental_contracts.file_path`.
+- **Ver acta:** abre una **URL firmada** (1 h) en el navegador.
+- **Descargar acta:** botón que usa una **ruta interna de la app**
+  (`GET /app/rentals/[id]/contract`, protegida por sesión) que sirve el PDF con
+  `Content-Disposition: attachment` (nombre `acta-<placa>-v<versión>.pdf`). Así
+  el dueño descarga el acta **directamente desde la app**, sin entrar a Supabase.
 
 ## Evidencia de entrega / devolución
 

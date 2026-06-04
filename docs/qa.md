@@ -102,6 +102,10 @@ documentos `E2E…`) — ver `tests/e2e/helpers/test-data.ts`.
 - `rental-documents.spec` — sección de acta + evidencias de entrega/devolución
   (empty states y botones); generación de acta y subida **gated** a Supabase.
 - Unit `pdf.test.ts` — el generador de acta produce un PDF válido (`%PDF-`).
+- `settings-exports.spec` — configuración del negocio (editar + persistir,
+  validación) y exportaciones (tarjeta, descarga CSV 200 + cabeceras, tipo
+  inválido 400).
+- Unit `csv.test.ts` — escapado/inyección de fórmulas y nombre de archivo.
 
 **Unitarias (`tests/unit`)** — `formatCOP`, `formatDate`, `calcAge`,
 `daysUntil`, `normalizePhone`, `whatsappLink`, y schemas Zod de motos, clientes,

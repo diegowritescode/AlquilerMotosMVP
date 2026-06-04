@@ -2,7 +2,16 @@ import { describe, it, expect } from "vitest";
 import { generateRentalContractPdf } from "@/lib/pdf/rental-contract";
 
 const data = {
-  businessName: "Moto Rental",
+  business: {
+    name: "Moto Rental",
+    ownerName: "Propietario Demo",
+    ownerDocument: "900123456",
+    city: "Medellín",
+    address: "Cra 50 # 10-25",
+    phone: "3001234567",
+    email: "negocio@motorental.co",
+  },
+  customTerms: null,
   generatedAtLabel: "04/06/2026 10:00",
   moto: {
     brand: "Bajaj",

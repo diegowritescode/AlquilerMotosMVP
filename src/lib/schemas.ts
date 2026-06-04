@@ -194,6 +194,41 @@ export const fineSchema = z.object({
 export type FineInput = z.infer<typeof fineSchema>;
 
 // ---------------------------------------------------------------------------
+// Business settings
+// ---------------------------------------------------------------------------
+
+export const businessSettingsSchema = z.object({
+  business_name: z.string().trim().min(1, "El nombre del negocio es obligatorio"),
+  owner_name: optionalString,
+  owner_document: optionalString,
+  phone: optionalString,
+  whatsapp: optionalString,
+  email: z
+    .string()
+    .trim()
+    .optional()
+    .transform((v) => (v && v.length > 0 ? v : null))
+    .refine((v) => v === null || /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(v), {
+      message: "Correo inválido",
+    }),
+  city: optionalString,
+  address: optionalString,
+  currency: z.string().trim().min(1).default("COP"),
+  alert_days_before_expiration: z
+    .union([z.string(), z.number()])
+    .transform((v) => (typeof v === "number" ? v : Number(v)))
+    .pipe(
+      z
+        .number({ invalid_type_error: "Debe ser un número" })
+        .int()
+        .min(1, "Mínimo 1 día")
+        .max(365, "Máximo 365 días"),
+    ),
+  contract_terms_text: optionalString,
+});
+export type BusinessSettingsInput = z.infer<typeof businessSettingsSchema>;
+
+// ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
 

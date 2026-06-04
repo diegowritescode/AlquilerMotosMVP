@@ -2,6 +2,7 @@ import {
   AlertTriangle,
   Bike,
   CircleDollarSign,
+  Download,
   Users,
   Wrench,
 } from "lucide-react";
@@ -78,11 +79,45 @@ export default async function ReportsPage() {
         </CardContent>
       </Card>
 
+      {/* Export */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Download className="h-4 w-4 text-brand" /> Exportar información
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          <p className="text-sm text-muted">
+            Descarga la información operativa en CSV (se abre en Excel/Sheets).
+            Solo metadatos: no incluye fotos ni documentos.
+          </p>
+          <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+            {EXPORTS.map((e) => (
+              <a
+                key={e.type}
+                href={`/app/exports/${e.type}`}
+                className="inline-flex items-center justify-center gap-1.5 rounded-xl border border-border bg-surface px-3 py-2.5 text-sm text-foreground transition-colors hover:border-brand/40"
+              >
+                <Download className="h-4 w-4 text-brand" /> {e.label}
+              </a>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+
       <p className="px-1 text-xs text-muted">
         Los reportes avanzados (rentabilidad por moto, mora por cliente,
         tendencias e integración contable) se incorporan en fases posteriores.
-        Exportación CSV/Excel está en el roadmap de Fase 2.
       </p>
     </div>
   );
 }
+
+const EXPORTS: { type: string; label: string }[] = [
+  { type: "motos", label: "Motos" },
+  { type: "arrendatarios", label: "Arrendatarios" },
+  { type: "alquileres", label: "Alquileres" },
+  { type: "pagos", label: "Pagos" },
+  { type: "fotomultas", label: "Fotomultas" },
+  { type: "mantenimientos", label: "Mantenimientos" },
+];

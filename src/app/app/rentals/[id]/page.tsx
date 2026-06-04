@@ -208,6 +208,7 @@ export default async function RentalDetailPage({
           <RentalContractSection
             action={generateContract}
             signedUrl={contractSignedUrl}
+            downloadHref={`/app/rentals/${rental.id}/contract`}
             version={contract?.version}
             generatedAtLabel={contract ? formatDate(contract.generated_at) : undefined}
           />

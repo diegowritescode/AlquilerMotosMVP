@@ -61,9 +61,10 @@ Para **finalizar**: entra al alquiler → en *Gestión*, elige si la moto queda
 
 - **Acta del alquiler →** toca **Generar acta PDF**. Se crea un documento con
   los datos de la moto, el arrendatario, el alquiler y las condiciones. Luego
-  puedes **Ver**, **Descargar** o **Regenerar** (crea una nueva versión). El
-  acta es un soporte operativo; para uso legal definitivo, revísala con un
-  asesor (no es firma digital).
+  puedes **Ver**, **Descargar** (se baja directo desde la app, sin entrar a
+  Supabase) o **Regenerar** (crea una nueva versión). El acta usa los datos de
+  *Configuración del negocio*. Es un soporte operativo; para uso legal
+  definitivo, revísala con un asesor (no es firma digital).
 - **Evidencia de entrega →** sube fotos de la moto al entregar, kilometraje y
   accesorios.
 - **Evidencia de devolución →** sube fotos al recibir, kilometraje final y
@@ -159,7 +160,17 @@ WEBP o PDF, hasta 5 MB):
 > documentos de los arrendatarios son datos personales: no los compartas por
 > fuera del sistema.
 
-## 12. Recomendaciones de operación diaria
+## 12. Configurar el negocio y exportar datos
+
+- **Configuración del negocio →** *Más → Configuración → Negocio → Editar*
+  (o `/app/settings/business`). Define nombre, propietario, documento/NIT,
+  contacto, ciudad, dirección y los **términos del acta**. Estos datos aparecen
+  en el acta PDF.
+- **Exportar a CSV →** en *Reportes*, tarjeta **Exportar información**. Descarga
+  motos, arrendatarios, alquileres, pagos, fotomultas o mantenimientos en CSV
+  (se abre en Excel/Sheets). Solo metadatos: no incluye fotos ni documentos.
+
+## 13. Recomendaciones de operación diaria
 
 - **Cada mañana:** abre el Dashboard. Revisa pagos pendientes y vencimientos.
 - **Al entregar/recibir una moto:** crea o finaliza el alquiler enseguida para

@@ -12,11 +12,13 @@ type Action = (prev: UploadState, formData: FormData) => Promise<UploadState>;
 export function RentalContractSection({
   action,
   signedUrl,
+  downloadHref,
   version,
   generatedAtLabel,
 }: {
   action: Action;
   signedUrl: string | null;
+  downloadHref: string;
   version?: number;
   generatedAtLabel?: string;
 }) {
@@ -47,8 +49,8 @@ export function RentalContractSection({
               <FileText className="h-4 w-4 text-brand" /> Ver acta
             </a>
             <a
-              href={signedUrl ?? "#"}
-              download
+              href={downloadHref}
+              data-testid="rental-contract-download"
               className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-surface px-3 py-1.5 text-sm text-foreground hover:border-brand/40"
             >
               <Download className="h-4 w-4 text-brand" /> Descargar

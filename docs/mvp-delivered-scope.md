@@ -26,7 +26,8 @@ es un portal para arrendatarios ni una plataforma de pagos en línea.
 | Fotomultas | Registro manual + sugerencia de responsable + **mapa OpenStreetMap/Leaflet** + **evidencia adjunta** (Storage). |
 | Archivos | **Upload a Supabase Storage** (privado + URLs firmadas): fotos de motos, documentos de arrendatarios, comprobantes de pago y evidencia de multas. |
 | Acta de alquiler | **PDF generado** (pdf-lib, versionado) + **evidencia de entrega/devolución**. Soporte operativo, no contrato legal definitivo. |
-| Reportes | Ingresos, pendientes, utilización, motos por estado, multas, clientes activos. |
+| Reportes | Ingresos, pendientes, utilización, motos por estado, multas, clientes activos + **exportación CSV**. |
+| Configuración | **Datos del negocio** (acta PDF, fallback a env). |
 | Auditoría | Registro de acciones críticas (crear/editar/cambiar estado). |
 | WhatsApp | Enlaces wa.me configurables en landing, clientes y alquileres. |
 
@@ -97,7 +98,7 @@ Tras el cambio de alcance, el foco es darle más control interno al administrado
    *(Entregado — Fase 2A.2)*
 3. ✅ **Acta/contrato PDF** y **evidencia de entrega/devolución** de la moto.
    *(Entregado — Fase 2A.3)*
-4. **Exportación CSV/Excel** y **configuración del negocio**.
+4. ✅ **Exportación CSV** y **configuración del negocio**. *(Entregado — 2A.4)*
 5. **Mejoras de reportes internos**.
 
 Luego, **Fase 2B**: recordatorios internos, notificaciones por email, mejoras de

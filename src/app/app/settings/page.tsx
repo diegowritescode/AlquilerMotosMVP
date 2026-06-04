@@ -1,8 +1,9 @@
+import Link from "next/link";
 import { CheckCircle2, Database, MessageCircle, ShieldCheck, XCircle } from "lucide-react";
 import { isSupabaseConfigured } from "@/lib/supabase/config";
 import { businessWhatsapp } from "@/lib/whatsapp";
-import { BUSINESS_NAME } from "@/lib/constants";
 import { listAuditLogs } from "@/lib/data/audit";
+import { getBusinessSettings } from "@/lib/data/business-settings";
 import { humanize } from "@/lib/utils";
 import { format, parseISO } from "date-fns";
 import { es } from "date-fns/locale";
@@ -15,7 +16,10 @@ export const metadata = { title: "Configuración" };
 
 export default async function SettingsPage() {
   const configured = isSupabaseConfigured();
-  const logs = await listAuditLogs(15);
+  const [logs, settings] = await Promise.all([
+    listAuditLogs(15),
+    getBusinessSettings(),
+  ]);
 
   return (
     <div className="space-y-5">
@@ -54,21 +58,32 @@ export default async function SettingsPage() {
 
       {/* Business config */}
       <Card>
-        <CardHeader>
+        <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle className="flex items-center gap-2">
             <MessageCircle className="h-4 w-4 text-brand" /> Negocio
           </CardTitle>
+          <Link
+            href="/app/settings/business"
+            className="text-xs font-medium text-brand hover:underline"
+          >
+            Editar
+          </Link>
         </CardHeader>
         <CardContent>
           <InfoList
             items={[
-              { label: "Nombre", value: BUSINESS_NAME },
-              { label: "WhatsApp", value: `+${businessWhatsapp()}` },
+              { label: "Nombre", value: settings.business_name },
+              { label: "Propietario", value: settings.owner_name ?? "—" },
+              { label: "Ciudad", value: settings.city ?? "—" },
+              { label: "WhatsApp", value: settings.whatsapp ? `+${settings.whatsapp}` : `+${businessWhatsapp()}` },
             ]}
           />
           <p className="mt-2 text-xs text-muted">
-            Configurable vía <code className="text-brand">NEXT_PUBLIC_BUSINESS_NAME</code> y{" "}
-            <code className="text-brand">NEXT_PUBLIC_BUSINESS_WHATSAPP</code>.
+            Estos datos se usan en el acta PDF. Edítalos en{" "}
+            <Link href="/app/settings/business" className="text-brand hover:underline">
+              Configuración del negocio
+            </Link>
+            .
           </p>
         </CardContent>
       </Card>
