@@ -56,7 +56,7 @@ export default async function PaymentsPage({
     <div className="space-y-4">
       <PageHeader
         title="Pagos"
-        subtitle={`${payments.length} registros`}
+        subtitle={`Registro interno · ${payments.length} ${payments.length === 1 ? "pago" : "pagos"}`}
         action={
           <LinkButton href="/app/payments/new" size="sm">
             <Plus className="h-4 w-4" /> Registrar
@@ -69,8 +69,8 @@ export default async function PaymentsPage({
       {payments.length === 0 ? (
         <EmptyState
           icon={Receipt}
-          title="Sin pagos"
-          description="Registra el primer pago de un alquiler."
+          title="Aún no hay pagos"
+          description="Registra el primer pago de un alquiler. Así llevas el control de lo que está al día, pendiente o vencido, con su comprobante."
           actionLabel="Registrar pago"
           actionHref="/app/payments/new"
         />

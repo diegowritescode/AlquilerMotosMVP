@@ -47,6 +47,44 @@ export async function uploadServer(
   return { ok: true, path };
 }
 
+/** Sube bytes generados en servidor (p. ej. un PDF) a un bucket. */
+export async function uploadBytesServer(
+  bucket: StorageBucket,
+  bytes: Uint8Array,
+  fileName: string,
+  contentType: string,
+  pathPrefix = "",
+): Promise<ServerUploadResult> {
+  const supabase = createSupabaseAdminClient();
+  if (!supabase) {
+    return {
+      ok: false,
+      error: "Storage no disponible: configura Supabase (URL + SERVICE_ROLE_KEY).",
+    };
+  }
+  const safeName = fileName.replace(/[^a-zA-Z0-9._-]/g, "_");
+  const path = `${pathPrefix}${pathPrefix ? "/" : ""}${Date.now()}-${safeName}`;
+  const { error } = await supabase.storage.from(bucket).upload(path, bytes, {
+    contentType,
+    cacheControl: "3600",
+    upsert: false,
+  });
+  if (error) return { ok: false, error: error.message };
+  return { ok: true, path };
+}
+
+/** Elimina un objeto del bucket (server, service-role). */
+export async function removeServer(
+  bucket: StorageBucket,
+  path: string,
+): Promise<{ ok: boolean; error?: string }> {
+  const supabase = createSupabaseAdminClient();
+  if (!supabase) return { ok: false, error: "Storage no disponible." };
+  const { error } = await supabase.storage.from(bucket).remove([path]);
+  if (error) return { ok: false, error: error.message };
+  return { ok: true };
+}
+
 /** Crea una URL firmada (privada, temporal) para un objeto del bucket. */
 export async function signedUrlServer(
   bucket: StorageBucket,

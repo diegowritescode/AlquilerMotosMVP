@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { MapPin, Pencil } from "lucide-react";
+import { FileWarning, MapPin, Pencil } from "lucide-react";
 import { getFine } from "@/lib/data/fines";
 import { getMotorcycle } from "@/lib/data/motorcycles";
 import { getCustomer } from "@/lib/data/customers";
@@ -11,6 +11,13 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { InfoList } from "@/components/app/info-list";
 import { StatusBadge } from "@/components/app/status-badge";
 import { LinkButton } from "@/components/ui/button";
+import { FinesMap } from "@/components/maps/FinesMap";
+import { osmLink } from "@/components/maps/map-utils";
+import { uploadFineEvidenceAction } from "@/lib/actions/uploads";
+import { signedUrlServer, STORAGE_BUCKETS } from "@/lib/storage-server";
+import { isImageType } from "@/lib/upload";
+import { FileUploadField } from "@/components/upload/FileUploadField";
+import { EvidenceViewer } from "@/components/upload/EvidenceViewer";
 
 export default async function FineDetailPage({
   params,
@@ -26,6 +33,11 @@ export default async function FineDetailPage({
   ]);
 
   const hasCoords = typeof fine.lat === "number" && typeof fine.lng === "number";
+
+  const evidenceUrl = fine.evidence_url
+    ? await signedUrlServer(STORAGE_BUCKETS.fineEvidence, fine.evidence_url)
+    : null;
+  const uploadEvidence = uploadFineEvidenceAction.bind(null, fine.id);
 
   return (
     <div className="space-y-5">
@@ -81,35 +93,79 @@ export default async function FineDetailPage({
         </CardContent>
       </Card>
 
-      {/* Map placeholder — full Leaflet/OpenStreetMap map is Fase 2 (whitepaper §14.4). */}
-      {hasCoords ? (
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <MapPin className="h-4 w-4 text-brand" /> Ubicación
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="flex h-40 flex-col items-center justify-center rounded-xl bg-surface-2 text-center text-muted">
-              <MapPin className="h-8 w-8 text-brand/60" />
-              <p className="mt-2 text-sm">
-                {fine.lat?.toFixed(5)}, {fine.lng?.toFixed(5)}
-              </p>
-              <a
-                href={`https://www.openstreetmap.org/?mlat=${fine.lat}&mlon=${fine.lng}#map=16/${fine.lat}/${fine.lng}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="mt-2 text-xs text-brand hover:underline"
-              >
-                Ver en OpenStreetMap →
-              </a>
-            </div>
-            <p className="mt-2 text-xs text-muted">
-              El mapa interactivo de fotomultas se incorporará en la Fase 2.
+      {/* Evidencia */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <FileWarning className="h-4 w-4 text-brand" /> Evidencia
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          <EvidenceViewer
+            signedUrl={evidenceUrl}
+            isImage={fine.evidence_url ? isImageType(fine.evidence_url) : false}
+            emptyText="Sin evidencia adjunta."
+          />
+          <FileUploadField
+            action={uploadEvidence}
+            buttonLabel="Subir evidencia"
+            hint="Captura, foto o PDF de soporte, hasta 5 MB."
+            testId="upload-fine-evidence"
+          />
+        </CardContent>
+      </Card>
+
+      {/* Ubicación */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <MapPin className="h-4 w-4 text-brand" /> Ubicación
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          {hasCoords ? (
+            <>
+              <FinesMap
+                fines={[
+                  {
+                    id: fine.id,
+                    lat: fine.lat as number,
+                    lng: fine.lng as number,
+                    motoLabel: moto
+                      ? `${moto.brand} ${moto.model} · ${moto.plate}`
+                      : "Moto",
+                    customerLabel: customer?.full_name ?? null,
+                    reason: fine.reason,
+                    amount: fine.amount,
+                    status: fine.status,
+                    statusLabel: FINE_STATUS_LABELS[fine.status] ?? fine.status,
+                    date: fine.date,
+                  },
+                ]}
+              />
+              <div className="mt-3 flex items-center justify-between text-xs text-muted">
+                <span>
+                  {(fine.lat as number).toFixed(5)},{" "}
+                  {(fine.lng as number).toFixed(5)}
+                </span>
+                <a
+                  href={osmLink(fine.lat as number, fine.lng as number)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-brand hover:underline"
+                >
+                  Ver en OpenStreetMap →
+                </a>
+              </div>
+            </>
+          ) : (
+            <p className="text-sm text-muted">
+              Esta fotomulta aún no tiene ubicación registrada. Edítala para
+              seleccionar un punto en el mapa.
             </p>
-          </CardContent>
-        </Card>
-      ) : null}
+          )}
+        </CardContent>
+      </Card>
     </div>
   );
 }

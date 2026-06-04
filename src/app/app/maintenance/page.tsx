@@ -63,8 +63,8 @@ export default async function MaintenancePage({
       {records.length === 0 ? (
         <EmptyState
           icon={Wrench}
-          title="Sin mantenimientos"
-          description="Programa o registra el mantenimiento de tus motos."
+          title="Aún no hay mantenimientos"
+          description="Programa o registra mantenimientos (aceite, frenos, llantas) y recibe alertas antes del próximo para evitar paradas."
           actionLabel="Agregar mantenimiento"
           actionHref="/app/maintenance/new"
         />

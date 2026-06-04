@@ -1,14 +1,25 @@
 import Link from "next/link";
 import {
+  AlertTriangle,
   Bike,
   CalendarClock,
   CheckCircle2,
   CircleDollarSign,
+  FilePlus2,
   KeyRound,
+  Receipt,
+  UserPlus,
   Wrench,
+  type LucideIcon,
 } from "lucide-react";
 import { getDashboardStats, listExpirations } from "@/lib/data/analytics";
-import { formatCOP, formatCOPCompact, relativeExpiry } from "@/lib/utils";
+import {
+  formatCOP,
+  formatCOPCompact,
+  formatDateLong,
+  relativeExpiry,
+  todayISO,
+} from "@/lib/utils";
 import type { Tone } from "@/lib/utils";
 import { StatCard } from "@/components/app/stat-card";
 import { AlertCard } from "@/components/app/alert-card";
@@ -32,24 +43,60 @@ const KIND_LABEL: Record<string, string> = {
   pago: "Pago",
 };
 
+const QUICK_ACTIONS: { href: string; label: string; icon: LucideIcon }[] = [
+  { href: "/app/motorcycles/new", label: "Nueva moto", icon: Bike },
+  { href: "/app/customers/new", label: "Nuevo cliente", icon: UserPlus },
+  { href: "/app/rentals/new", label: "Nuevo alquiler", icon: FilePlus2 },
+  { href: "/app/payments/new", label: "Registrar pago", icon: Receipt },
+  { href: "/app/fines/new", label: "Registrar multa", icon: AlertTriangle },
+];
+
 export default async function DashboardPage() {
   const [stats, expirations] = await Promise.all([
     getDashboardStats(),
     listExpirations(),
   ]);
 
-  const upcomingDocs = expirations
-    .filter((e) => e.kind !== "pago")
-    .slice(0, 5);
+  const upcomingDocs = expirations.filter((e) => e.kind !== "pago").slice(0, 5);
 
   return (
     <div className="space-y-6">
       {/* Greeting */}
       <div>
-        <p className="text-sm text-muted">Hola, Propietario 👋</p>
+        <p className="text-sm text-muted capitalize">{formatDateLong(todayISO())}</p>
         <h1 className="text-2xl font-bold text-foreground">
-          Resumen general de {BUSINESS_NAME}
+          Hola, Propietario 👋
         </h1>
+        <p className="mt-0.5 text-sm text-muted">
+          Centro de control de {BUSINESS_NAME}: tu flota, pagos y vencimientos en
+          un vistazo.
+        </p>
+      </div>
+
+      {/* Quick actions */}
+      <div>
+        <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted">
+          Acciones rápidas
+        </p>
+        <div className="grid grid-cols-3 gap-2 sm:grid-cols-5">
+          {QUICK_ACTIONS.map((a) => {
+            const Icon = a.icon;
+            return (
+              <Link
+                key={a.href}
+                href={a.href}
+                className="flex flex-col items-center justify-center gap-1.5 rounded-2xl border border-border bg-surface px-2 py-3 text-center transition-colors hover:border-brand/50 hover:bg-surface-2 active:scale-[0.98]"
+              >
+                <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-brand/15 text-brand">
+                  <Icon className="h-5 w-5" />
+                </span>
+                <span className="text-[11px] font-medium leading-tight text-foreground">
+                  {a.label}
+                </span>
+              </Link>
+            );
+          })}
+        </div>
       </div>
 
       {/* Primary stats */}
@@ -64,12 +111,13 @@ export default async function DashboardPage() {
         <StatCard
           label="Alquiladas"
           value={stats.rented}
+          hint={`${stats.available} disponibles`}
           icon={KeyRound}
           tone="info"
           href="/app/motorcycles?status=alquilada"
         />
         <StatCard
-          label="Ingresos (mes)"
+          label="Ingresos del mes"
           value={formatCOPCompact(stats.incomeMonth)}
           hint="Pagos registrados"
           icon={CircleDollarSign}
@@ -86,17 +134,13 @@ export default async function DashboardPage() {
         <CardContent className="grid grid-cols-2 gap-3 sm:grid-cols-4">
           <FleetStat label="Disponibles" value={stats.available} tone="success" />
           <FleetStat label="Alquiladas" value={stats.rented} tone="info" />
-          <FleetStat
-            label="Mantenimiento"
-            value={stats.maintenance}
-            tone="warning"
-          />
+          <FleetStat label="Mantenimiento" value={stats.maintenance} tone="warning" />
           <FleetStat label="Inactivas" value={stats.inactive} tone="neutral" />
         </CardContent>
       </Card>
 
-      {/* Pending payments + maintenance */}
-      <div className="grid grid-cols-2 gap-3">
+      {/* Alerts: payments, maintenance, fines */}
+      <div className="grid grid-cols-2 gap-3 lg:grid-cols-3">
         <StatCard
           label="Pagos pendientes"
           value={stats.pendingPaymentsCount}
@@ -106,12 +150,20 @@ export default async function DashboardPage() {
           href="/app/payments?status=pendiente"
         />
         <StatCard
-          label="Mantenimientos próximos"
+          label="Mantenimientos"
           value={stats.upcomingMaintenance}
           hint="Próximos 7 días"
           tone={stats.upcomingMaintenance > 0 ? "warning" : "success"}
           icon={Wrench}
           href="/app/maintenance"
+        />
+        <StatCard
+          label="Multas pendientes"
+          value={stats.finesPendingCount}
+          hint={formatCOP(stats.finesPendingAmount)}
+          tone={stats.finesPendingCount > 0 ? "warning" : "success"}
+          icon={AlertTriangle}
+          href="/app/fines?status=pendiente"
         />
       </div>
 
@@ -138,11 +190,7 @@ export default async function DashboardPage() {
                 key={e.id}
                 title={`${KIND_LABEL[e.kind] ?? e.kind} · ${e.subtitle}`}
                 subtitle={relativeExpiry(e.date)}
-                badgeLabel={
-                  e.daysLeft < 0
-                    ? "Vencido"
-                    : `${e.daysLeft}d`
-                }
+                badgeLabel={e.daysLeft < 0 ? "Vencido" : `${e.daysLeft}d`}
                 tone={expTone(e.daysLeft)}
                 href={e.motorcycleId ? `/app/motorcycles/${e.motorcycleId}` : undefined}
               />
@@ -164,7 +212,7 @@ export default async function DashboardPage() {
             <p className="text-sm font-semibold text-foreground">
               Calendario de pagos
             </p>
-            <p className="text-xs text-muted">Pagos por fecha y registro</p>
+            <p className="text-xs text-muted">Revisa y registra pagos por fecha</p>
           </div>
         </div>
         <span className="text-brand">→</span>

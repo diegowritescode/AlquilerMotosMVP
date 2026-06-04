@@ -45,9 +45,9 @@ export default async function CustomersPage({
       {customers.length === 0 ? (
         <EmptyState
           icon={Users}
-          title="Sin arrendatarios"
-          description="Agrega tu primer cliente para registrar alquileres y pagos."
-          actionLabel="Agregar cliente"
+          title="Aún no hay arrendatarios"
+          description="Registra a tu primer arrendatario con sus datos y licencia para asignarle motos, llevar el control de pagos y escribirle por WhatsApp."
+          actionLabel="Agregar arrendatario"
           actionHref="/app/customers/new"
         />
       ) : (

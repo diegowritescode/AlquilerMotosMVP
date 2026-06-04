@@ -9,12 +9,16 @@ import { createSupabaseBrowserClient } from "./supabase/client";
  *   - customer-documents
  *   - payment-evidence
  *   - fine-evidence
+ *   - rental-evidence    (fotos/soportes de entrega y devolución)
+ *   - rental-contracts   (actas PDF generadas)
  */
 export const STORAGE_BUCKETS = {
   motorcyclePhotos: "motorcycle-photos",
   customerDocuments: "customer-documents",
   paymentEvidence: "payment-evidence",
   fineEvidence: "fine-evidence",
+  rentalEvidence: "rental-evidence",
+  rentalContracts: "rental-contracts",
 } as const;
 
 export type StorageBucket =

@@ -4,6 +4,12 @@ import { Pencil } from "lucide-react";
 import { getPayment } from "@/lib/data/payments";
 import { getCustomer } from "@/lib/data/customers";
 import { markPaidAction } from "@/lib/actions/payments";
+import { uploadPaymentEvidenceAction } from "@/lib/actions/uploads";
+import { signedUrlServer, STORAGE_BUCKETS } from "@/lib/storage-server";
+import { isImageType } from "@/lib/upload";
+import { FileUploadField } from "@/components/upload/FileUploadField";
+import { EvidenceViewer } from "@/components/upload/EvidenceViewer";
+import { Receipt } from "lucide-react";
 import {
   PAYMENT_METHOD_LABELS,
   PAYMENT_STATUS_LABELS,
@@ -26,6 +32,11 @@ export default async function PaymentDetailPage({
 
   const customer = await getCustomer(payment.customer_id);
   const canMarkPaid = payment.status !== "pagado";
+
+  const evidenceUrl = payment.evidence_url
+    ? await signedUrlServer(STORAGE_BUCKETS.paymentEvidence, payment.evidence_url)
+    : null;
+  const uploadEvidence = uploadPaymentEvidenceAction.bind(null, payment.id);
 
   return (
     <div className="space-y-5">
@@ -84,6 +95,28 @@ export default async function PaymentDetailPage({
               { label: "Referencia", value: payment.reference ?? "—" },
               { label: "Observaciones", value: payment.notes ?? "—" },
             ]}
+          />
+        </CardContent>
+      </Card>
+
+      {/* Comprobante */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Receipt className="h-4 w-4 text-brand" /> Comprobante
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          <EvidenceViewer
+            signedUrl={evidenceUrl}
+            isImage={payment.evidence_url ? isImageType(payment.evidence_url) : false}
+            emptyText="Sin comprobante adjunto."
+          />
+          <FileUploadField
+            action={uploadEvidence}
+            buttonLabel="Subir comprobante"
+            hint="JPG, PNG, WEBP o PDF, hasta 5 MB. Registro interno; el cobro se gestiona por fuera."
+            testId="upload-payment-evidence"
           />
         </CardContent>
       </Card>

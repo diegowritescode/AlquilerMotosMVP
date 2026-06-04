@@ -95,6 +95,13 @@ documentos `E2E…`) — ver `tests/e2e/helpers/test-data.ts`.
   activo, listado, detalle de moto.
 - `expirations-reports.spec` — carga de vencimientos y reportes sin errores.
 - `audit.spec` — crear moto genera audit log; pantalla de auditoría carga.
+- `fines-map.spec` — selector de ubicación, registrar multa con coords, vista
+  mapa y filtros (no depende de tiles).
+- `uploads.spec` — presencia de campos de subida y empty states (moto, cliente,
+  pago, multa); subida real a Storage **gated** a Supabase.
+- `rental-documents.spec` — sección de acta + evidencias de entrega/devolución
+  (empty states y botones); generación de acta y subida **gated** a Supabase.
+- Unit `pdf.test.ts` — el generador de acta produce un PDF válido (`%PDF-`).
 
 **Unitarias (`tests/unit`)** — `formatCOP`, `formatDate`, `calcAge`,
 `daysUntil`, `normalizePhone`, `whatsappLink`, y schemas Zod de motos, clientes,
@@ -102,11 +109,16 @@ alquileres y pagos.
 
 ## Qué NO cubren todavía
 
-- Upload real de archivos a Storage (los campos `*_url` guardan URLs; Fase 2).
-- Pagos online / pasarelas (fuera de alcance).
-- Consulta SIMIT/RUNT (registro de multas es 100% manual).
-- Portal de cliente / multiusuario (Fase 2/3).
+- La **subida real a Storage** se prueba solo con Supabase configurado
+  (`hasDbAccess`); en modo demo esos tests se omiten y se validan presencia de
+  campos + empty states. Validación de archivo cubierta por unit tests
+  (`tests/unit/upload.test.ts`).
 - Pruebas de carga/rendimiento y accesibilidad exhaustiva.
+
+**Fuera de alcance del producto (no se prueba porque no existe, por decisión del
+cliente):** pagos en línea / pasarelas, portal o login de arrendatario,
+autoservicio, app nativa y consulta automática SIMIT/RUNT. El registro de pagos
+y de multas es **interno y manual**.
 
 ## Estrategia de cleanup (resumen)
 

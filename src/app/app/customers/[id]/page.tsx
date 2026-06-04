@@ -1,12 +1,26 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { AlertTriangle, FileText, Pencil, Receipt } from "lucide-react";
+import { AlertTriangle, FileText, FolderOpen, Pencil, Receipt } from "lucide-react";
 import { getCustomer } from "@/lib/data/customers";
 import { listRentals } from "@/lib/data/rentals";
 import { listPayments } from "@/lib/data/payments";
 import { listFines } from "@/lib/data/fines";
 import { getMotorcycle } from "@/lib/data/motorcycles";
+import {
+  listCustomerDocuments,
+  CUSTOMER_DOCUMENT_LABELS,
+  CUSTOMER_DOCUMENT_TYPES,
+} from "@/lib/data/customer-documents";
 import { deleteCustomerAction } from "@/lib/actions/customers";
+import {
+  uploadCustomerDocumentAction,
+  deleteCustomerDocumentAction,
+} from "@/lib/actions/uploads";
+import { signedUrlServer, STORAGE_BUCKETS } from "@/lib/storage-server";
+import { isImageType } from "@/lib/upload";
+import { FileUploadField } from "@/components/upload/FileUploadField";
+import { DocumentList } from "@/components/upload/DocumentList";
+import { Select } from "@/components/ui/form";
 import {
   FINE_STATUS_LABELS,
   FINE_STATUS_TONE,
@@ -32,11 +46,23 @@ export default async function CustomerDetailPage({
   const customer = await getCustomer(params.id);
   if (!customer) notFound();
 
-  const [rentals, payments, fines] = await Promise.all([
+  const [rentals, payments, fines, documents] = await Promise.all([
     listRentals({ customerId: customer.id }),
     listPayments({ customerId: customer.id }),
     listFines({ customerId: customer.id }),
+    listCustomerDocuments(customer.id),
   ]);
+
+  const docItems = await Promise.all(
+    documents.map(async (d) => ({
+      id: d.id,
+      label: CUSTOMER_DOCUMENT_LABELS[d.type] ?? d.type,
+      signedUrl: await signedUrlServer(STORAGE_BUCKETS.customerDocuments, d.file_url),
+      isImage: isImageType(d.file_url),
+      deleteAction: deleteCustomerDocumentAction.bind(null, customer.id, d.id, d.file_url),
+    })),
+  );
+  const uploadDoc = uploadCustomerDocumentAction.bind(null, customer.id);
 
   // Resolve moto labels for the active rentals.
   const activeRentals = rentals.filter((r) => r.status === "activo");
@@ -114,6 +140,35 @@ export default async function CustomerDetailPage({
               { label: "Observaciones", value: customer.notes ?? "—" },
             ]}
           />
+        </CardContent>
+      </Card>
+
+      {/* Documents */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <FolderOpen className="h-4 w-4 text-brand" /> Documentos
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          <DocumentList
+            items={docItems}
+            emptyText="Este arrendatario aún no tiene documentos cargados."
+          />
+          <FileUploadField
+            action={uploadDoc}
+            buttonLabel="Subir documento"
+            hint="JPG, PNG, WEBP o PDF, hasta 5 MB. Datos sensibles: almacenamiento privado."
+            testId="upload-customer-document"
+          >
+            <Select name="type" aria-label="Tipo de documento" defaultValue="licencia">
+              {CUSTOMER_DOCUMENT_TYPES.map((t) => (
+                <option key={t} value={t}>
+                  {CUSTOMER_DOCUMENT_LABELS[t]}
+                </option>
+              ))}
+            </Select>
+          </FileUploadField>
         </CardContent>
       </Card>
 

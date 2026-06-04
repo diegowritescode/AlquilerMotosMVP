@@ -1,9 +1,14 @@
-# Moto Rental — Gestión de alquiler de motocicletas (MVP Fase 1)
+# Moto Rental — Sistema interno de control operativo (MVP Fase 1)
 
-Aplicación web **responsive mobile-first** para que el dueño de un negocio
-pequeño de alquiler de motocicletas en Medellín controle su flota,
-arrendatarios, alquileres, pagos, vencimientos, mantenimientos y fotomultas
-desde el celular.
+**Sistema interno de gestión** para que el dueño de un negocio pequeño de
+alquiler de motocicletas en Medellín controle su flota, arrendatarios,
+alquileres, **pagos registrados manualmente**, vencimientos, mantenimientos y
+fotomultas desde el celular.
+
+Es una herramienta **administrativa de uso interno** (la usa el dueño/operador),
+**no** un portal para arrendatarios ni una plataforma de pagos en línea: el
+cobro y la comunicación se gestionan por fuera y aquí queda el registro,
+historial y trazabilidad. Web responsive **mobile-first**.
 
 Construido a partir del whitepaper técnico-funcional en
 [`docs/whitepaper.md`](docs/whitepaper.md).
@@ -40,11 +45,11 @@ Construido a partir del whitepaper técnico-funcional en
 - ✅ **Dashboard** (`/app/dashboard`): tarjetas de flota, ingresos, pagos pendientes, vencimientos y mantenimientos próximos.
 - ✅ **Motos** (`/app/motorcycles`): CRUD completo, búsqueda, filtros, detalle con historial, eliminación lógica.
 - ✅ **Arrendatarios** (`/app/customers`): CRUD, búsqueda, detalle con motos/pagos/multas, WhatsApp, estado financiero.
-- ✅ **Alquileres** (`/app/rentals`): CRUD + reglas (activar cambia moto a "alquilada", evitar dos activos, finalizar elige estado de la moto).
-- ✅ **Pagos manuales** (`/app/payments`): CRUD, métodos, estados, agrupación por mes, "marcar pagado".
+- ✅ **Alquileres** (`/app/rentals`): CRUD + reglas (activar cambia moto a "alquilada", evitar dos activos, finalizar elige estado de la moto), **acta PDF** generada + **evidencia de entrega/devolución**.
+- ✅ **Pagos (registro interno)** (`/app/payments`): registro manual de pagos recibidos (efectivo, transferencia, Nequi, Bancolombia, otro), estados (pendiente/parcial/pagado/vencido/en acuerdo), agrupación por mes y "marcar pagado". El cobro se gestiona por fuera del sistema.
 - ✅ **Vencimientos** (`/app/expirations`): SOAT, tecnomecánica, impuestos, aceite, mantenimiento y pagos (vencidos / 7 / 15 / 30 días).
 - ✅ **Mantenimientos** (`/app/maintenance`): registro, tipos, estados, costos, próximos.
-- ✅ **Fotomultas** (`/app/fines`): registro manual, sugerencia de responsable por alquiler activo, placeholder de mapa.
+- ✅ **Fotomultas** (`/app/fines`): registro manual, sugerencia de responsable por alquiler activo, **mapa OpenStreetMap/Leaflet** (vista lista/mapa, selección de ubicación, filtros por moto/arrendatario/fecha).
 - ✅ **Reportes** (`/app/reports`): ingresos, pendientes, utilización, motos por estado, multas, clientes activos.
 - ✅ **Auditoría** (`/app/settings`): tabla `audit_logs` + helper central usado en las acciones críticas.
 - ✅ **WhatsApp** en landing, detalle de cliente, detalle de alquiler y soporte.
@@ -120,10 +125,11 @@ Las migraciones SQL están en [`supabase/migrations`](supabase/migrations):
 - `0001_init.sql` — esquema completo (tablas, índices, constraints, triggers `updated_at`).
 - `0002_rls.sql` — Row Level Security + helper `is_admin()`.
 - `0003_auth_profile.sql` — perfil automático al registrar usuario + promoción admin.
+- `0004_rental_documents.sql` — `rental_evidence` + `rental_contracts` (Fase 2A.3).
 - `seed.sql` — datos semilla (5 motos, 4 clientes, 3 alquileres, pagos, mantenimientos, multas).
 
 **Opción A — SQL Editor (rápida):** pega el contenido de cada archivo en orden
-(`0001` → `0002` → `0003`, y luego `seed.sql`) en el SQL Editor de Supabase.
+(`0001` → `0002` → `0003` → `0004`, y luego `seed.sql`) en el SQL Editor de Supabase.
 
 **Opción B — Supabase CLI:**
 
@@ -181,32 +187,53 @@ npm run test:qa                   # lint + typecheck + build + e2e
 - **Acceso a datos vía service-role (server-only):** decisión de Fase 1 para un
   único admin; RLS permanece activo para bloquear acceso directo con anon key.
   La key nunca se expone al cliente.
-- **Carga de archivos:** formularios, tipos y helpers (`src/lib/storage.ts`
-  navegador, `src/lib/storage-server.ts` servidor) listos; los campos `*_url`
-  guardan URLs. El upload de archivos desde la UI se completa en Fase 2.
-- **Pagos online:** NO incluidos (Fase 2). Solo registro manual.
+- **Carga de archivos:** ✅ implementada (Fase 2A.2) — fotos de motos,
+  documentos de arrendatarios y evidencias de pagos/multas a **Supabase Storage**
+  (buckets privados + URLs firmadas, validación tipo/tamaño). Detalle en
+  [`docs/storage.md`](docs/storage.md).
+- **Pagos:** registro **manual interno** del administrador. Los pagos en línea
+  quedan **fuera de alcance** por decisión del cliente (el cobro se gestiona por
+  fuera del sistema).
 - **Fotomultas:** registro **manual**. **No se automatiza SIMIT/RUNT ni se hace
   scraping** (riesgo legal/técnico, whitepaper §14.5). La consulta oficial es
   manual o vía proveedor autorizado en fases futuras.
-- **Mapa de fotomultas:** placeholder con enlace a OpenStreetMap; mapa
-  interactivo (Leaflet) es Fase 2.
-- **Multiusuario/roles avanzados:** Fase 3.
+- **Mapa de fotomultas:** ✅ implementado (Fase 2A.1) con OpenStreetMap/Leaflet
+  (vista lista/mapa, selección de ubicación, filtros). Muestra solo multas
+  registradas **manualmente**; no consulta SIMIT/RUNT.
+- **Sin portal de arrendatarios ni login de cliente:** decisión del cliente.
+  Es un sistema de uso interno del negocio.
 
 ---
 
-## Roadmap Fase 2 (resumen)
+## Roadmap (resumen)
 
-Portal de cliente, pagos online (Wompi/Bold), contratos PDF, recordatorios por
-email, mapa simple de fotomultas y exportación CSV/Excel.
-Detalle en [`docs/roadmap.md`](docs/roadmap.md).
+**Fase 2A — Control operativo avanzado (prioridad):** ✅ mapa de fotomultas con
+OpenStreetMap/Leaflet (+ selección de ubicación y filtros) **entregado (2A.1)**;
+✅ upload real de fotos/documentos/evidencias a Storage **entregado (2A.2)**;
+✅ acta PDF + evidencia de entrega/devolución **entregado (2A.3)**; siguen:
+exportación CSV/Excel, configuración del negocio y mejoras de reportes internos.
+
+**Fase 2B — Automatización:** recordatorios internos, notificaciones por email,
+mejoras de auditoría, reportes avanzados y mapa con estadísticas por zona.
+
+**Fuera de alcance (decisión del cliente):** portal de arrendatarios, pagos en
+línea / pasarelas, login de cliente, autoservicio, app nativa, WhatsApp Business
+API y consulta automática SIMIT/RUNT. Detalle en
+[`docs/roadmap.md`](docs/roadmap.md).
 
 ---
 
 ## Documentación
 
+- [`docs/manual-admin.md`](docs/manual-admin.md) — **manual de uso** (para el dueño, no técnico).
+- [`docs/demo-script.md`](docs/demo-script.md) — **guion de demo** (10–15 min) para presentar al cliente.
+- [`docs/mvp-delivered-scope.md`](docs/mvp-delivered-scope.md) — **alcance entregado** del MVP Fase 1.
+- [`docs/pre-demo-checklist.md`](docs/pre-demo-checklist.md) — **checklist** antes de presentar.
+- [`docs/storage.md`](docs/storage.md) — buckets, subida de archivos y URLs firmadas.
+- [`docs/contracts.md`](docs/contracts.md) — acta PDF del alquiler y evidencia de entrega/devolución.
+- [`docs/qa.md`](docs/qa.md) — estrategia y ejecución de pruebas.
 - [`docs/architecture.md`](docs/architecture.md) — arquitectura y estructura de carpetas.
-- [`docs/database.md`](docs/database.md) — modelo de datos y cómo migrar a Supabase.
+- [`docs/database.md`](docs/database.md) — modelo de datos y Supabase.
 - [`docs/roadmap.md`](docs/roadmap.md) — fases del producto.
-- [`docs/manual-admin.md`](docs/manual-admin.md) — manual del administrador.
 - [`docs/whitepaper.md`](docs/whitepaper.md) — whitepaper original.
 # AlquilerMotosMVP

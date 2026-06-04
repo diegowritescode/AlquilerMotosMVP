@@ -36,7 +36,10 @@ export function PaymentForm({
     <form action={formAction} className="space-y-5">
       {state.error ? <FormMessage>{state.error}</FormMessage> : null}
 
-      <FormSection title="Pago">
+      <FormSection
+        title="Pago"
+        description="Registro interno de un pago recibido. El cobro se gestiona por fuera del sistema (efectivo, transferencia, Nequi, Bancolombia u otro)."
+      >
         <Field label="Arrendatario" htmlFor="customer_id" required error={err.customer_id?.[0]}>
           <Select id="customer_id" name="customer_id" defaultValue={p?.customer_id ?? defaultCustomerId ?? ""}>
             <option value="">Selecciona...</option>

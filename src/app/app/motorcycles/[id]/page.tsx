@@ -1,12 +1,20 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { AlertTriangle, Bike, FileText, Pencil, Wrench } from "lucide-react";
+import { AlertTriangle, Bike, Camera, FileText, Pencil, Wrench } from "lucide-react";
 import { getMotorcycle } from "@/lib/data/motorcycles";
 import { listRentals } from "@/lib/data/rentals";
 import { getCustomer } from "@/lib/data/customers";
 import { listMaintenance } from "@/lib/data/maintenance";
 import { listFines } from "@/lib/data/fines";
+import { listMotorcyclePhotos } from "@/lib/data/motorcycle-photos";
 import { deleteMotorcycleAction } from "@/lib/actions/motorcycles";
+import {
+  uploadMotorcyclePhotoAction,
+  deleteMotorcyclePhotoAction,
+} from "@/lib/actions/uploads";
+import { signedUrlServer, STORAGE_BUCKETS } from "@/lib/storage-server";
+import { FileUploadField } from "@/components/upload/FileUploadField";
+import { ImagePreviewGrid } from "@/components/upload/ImagePreviewGrid";
 import {
   CONDITION_LABELS,
   CONDITION_TONE,
@@ -47,11 +55,21 @@ export default async function MotorcycleDetailPage({
   const moto = await getMotorcycle(params.id);
   if (!moto) notFound();
 
-  const [rentals, maintenance, fines] = await Promise.all([
+  const [rentals, maintenance, fines, photos] = await Promise.all([
     listRentals({ motorcycleId: moto.id }),
     listMaintenance({ motorcycleId: moto.id }),
     listFines({ motorcycleId: moto.id }),
+    listMotorcyclePhotos(moto.id),
   ]);
+
+  const gallery = await Promise.all(
+    photos.map(async (p) => ({
+      id: p.id,
+      signedUrl: await signedUrlServer(STORAGE_BUCKETS.motorcyclePhotos, p.file_url),
+      deleteAction: deleteMotorcyclePhotoAction.bind(null, moto.id, p.id, p.file_url),
+    })),
+  );
+  const uploadPhoto = uploadMotorcyclePhotoAction.bind(null, moto.id);
 
   const activeRental = rentals.find((r) => r.status === "activo");
   const activeCustomer = activeRental
@@ -103,6 +121,27 @@ export default async function MotorcycleDetailPage({
               {formatCOP(moto.daily_price)} día · {formatCOP(moto.monthly_price)} mes
             </p>
           </div>
+        </CardContent>
+      </Card>
+
+      {/* Fotos */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Camera className="h-4 w-4 text-brand" /> Fotos
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          <ImagePreviewGrid
+            items={gallery}
+            emptyText="Esta moto aún no tiene fotos registradas."
+          />
+          <FileUploadField
+            action={uploadPhoto}
+            buttonLabel="Subir foto"
+            hint="JPG, PNG o WEBP, hasta 5 MB."
+            testId="upload-motorcycle-photo"
+          />
         </CardContent>
       </Card>
 

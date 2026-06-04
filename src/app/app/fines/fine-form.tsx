@@ -9,6 +9,7 @@ import type { ActionState } from "@/lib/actions/shared";
 import { Field, Input, Select, Textarea, FormSection } from "@/components/ui/form";
 import { SubmitButton } from "@/components/app/submit-button";
 import { FormMessage } from "@/components/app/form-message";
+import { FineLocationPicker } from "@/components/maps/FineLocationPicker";
 
 type Action = (prev: ActionState, formData: FormData) => Promise<ActionState>;
 
@@ -82,15 +83,10 @@ export function FineForm({
             ))}
           </Select>
         </Field>
-        <Field label="Ubicación" htmlFor="location_text">
-          <Input id="location_text" name="location_text" defaultValue={f?.location_text ?? ""} placeholder="Cl. 30 con Cra. 65" />
+        <Field label="Ubicación (texto)" htmlFor="location_text" className="sm:col-span-2">
+          <Input id="location_text" name="location_text" defaultValue={f?.location_text ?? ""} placeholder="Cl. 30 con Cra. 65, El Poblado" />
         </Field>
-        <Field label="Latitud" htmlFor="lat" hint="Opcional (mapa Fase 2)">
-          <Input id="lat" name="lat" type="number" step="any" defaultValue={f?.lat ?? ""} />
-        </Field>
-        <Field label="Longitud" htmlFor="lng" hint="Opcional (mapa Fase 2)">
-          <Input id="lng" name="lng" type="number" step="any" defaultValue={f?.lng ?? ""} />
-        </Field>
+        <FineLocationPicker defaultLat={f?.lat ?? null} defaultLng={f?.lng ?? null} />
         <Field label="Observaciones" htmlFor="notes" className="sm:col-span-2">
           <Textarea id="notes" name="notes" defaultValue={f?.notes ?? ""} />
         </Field>

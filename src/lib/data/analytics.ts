@@ -27,6 +27,8 @@ export interface DashboardStats {
   pendingPaymentsAmount: number;
   upcomingExpirations: number; // next 15 days + overdue
   upcomingMaintenance: number; // next 7 days + overdue (programado)
+  finesPendingCount: number;
+  finesPendingAmount: number;
 }
 
 function inRange(dateStr: string | null | undefined, from: Date, to: Date): boolean {
@@ -36,12 +38,17 @@ function inRange(dateStr: string | null | undefined, from: Date, to: Date): bool
 }
 
 export async function getDashboardStats(): Promise<DashboardStats> {
-  const [motos, payments, maintenance, expirations] = await Promise.all([
+  const [motos, payments, maintenance, fines, expirations] = await Promise.all([
     listMotorcycles(),
     listPayments(),
     listMaintenance(),
+    listFines(),
     listExpirations(),
   ]);
+
+  const pendingFines = fines.filter(
+    (f) => f.status === "pendiente" || f.status === "en_disputa",
+  );
 
   const now = new Date();
   const weekFrom = startOfWeek(now, { weekStartsOn: 1 });
@@ -87,6 +94,8 @@ export async function getDashboardStats(): Promise<DashboardStats> {
     pendingPaymentsAmount: pending.reduce((sum, p) => sum + p.amount, 0),
     upcomingExpirations,
     upcomingMaintenance,
+    finesPendingCount: pendingFines.length,
+    finesPendingAmount: pendingFines.reduce((sum, f) => sum + f.amount, 0),
   };
 }
 

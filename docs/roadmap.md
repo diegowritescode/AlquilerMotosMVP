@@ -1,40 +1,66 @@
 # Roadmap
 
-## Fase 1 — MVP operativo (este repositorio)
+> **Posicionamiento:** Moto Rental es un **sistema interno de control operativo**
+> para el negocio de alquiler de motocicletas. Lo usa el dueño/operador. No es un
+> portal para arrendatarios ni una plataforma de pagos en línea.
 
-Landing, login admin, dashboard, motos, arrendatarios, alquileres, pagos
-manuales, vencimientos, mantenimientos, fotomultas manuales, reportes básicos y
-auditoría. Mobile-first, dark theme, WhatsApp integrado.
+## Fase 1 — MVP operativo (entregado)
 
-## Fase 2 — Automatización y portal cliente
+Landing pública (captación por WhatsApp), login del administrador, dashboard,
+motos, arrendatarios (datos administrativos), alquileres, **pagos como registro
+interno manual**, vencimientos, mantenimientos, fotomultas manuales, reportes
+internos y auditoría. Mobile-first, dark theme, WhatsApp como contacto rápido.
 
-- Portal de cliente (autoservicio, consulta de su info).
-- Verificación documental estructurada.
-- Solicitud de alquiler desde el catálogo.
-- Contrato PDF + aceptación de términos con evidencia.
-- **Pagos online** (integrar **una** pasarela: Wompi o Bold) con webhooks.
-- Links de pago automáticos por WhatsApp.
-- Recordatorios por email (Resend/Brevo) de pagos, vencimientos y mantenimiento.
-- **Mapa simple de fotomultas** (OpenStreetMap + Leaflet) con ubicación manual.
-- Exportación CSV/Excel.
-- Carga real de archivos a Supabase Storage con URLs firmadas.
+---
 
-## Fase 3 — Escalamiento
+## Fase 2A — Control operativo avanzado (PRIORIDAD)
 
-- PWA instalable avanzada / app nativa (alto volumen).
-- Multiusuario y roles (operador, cobrador, mecánico, auditor).
-- Multi-sede, scoring de clientes, integración contable.
-- Analítica avanzada / BI (>30–50 motos).
-- Integración formal con proveedores de datos de tránsito (si el volumen lo justifica).
+Enfocada en darle más control interno al administrador.
 
-## Fuera de alcance del MVP (y por qué)
+1. ✅ **Mapa de fotomultas** con OpenStreetMap + Leaflet. *(Entregado en 2A.1)*
+2. ✅ **Selección de ubicación en mapa** al registrar/editar una fotomulta
+   (clic en el mapa o coordenadas manuales; sin geocoding ni GPS). *(2A.1)*
+3. ✅ **Filtros** por estado, moto, arrendatario y rango de fechas que afectan
+   lista y mapa. *(2A.1)*
+4. ✅ **Upload real de documentos/fotos** a Supabase Storage (fotos de motos,
+   documentos del arrendatario, comprobantes de pago, evidencia de multas) con
+   buckets privados y URLs firmadas. *(Entregado en 2A.2 — ver docs/storage.md)*
+5. ✅ **Acta / contrato PDF** del alquiler (pdf-lib, versionada). *(2A.3)*
+6. ✅ **Evidencia de entrega y devolución** de la moto (fotos + estado). *(2A.3)*
+7. **Exportación CSV/Excel** de pagos, alquileres y flota.
+8. **Configuración del negocio** (nombre, WhatsApp, valores por defecto).
+9. **Mejoras de reportes internos** (rentabilidad por moto, mora por cliente).
 
-| Funcionalidad | Razón |
+> El mapa muestra **fotomultas registradas manualmente**. No consulta SIMIT/RUNT
+> ni automatiza comparendos; OpenStreetMap se usa solo para visualizar la
+> ubicación, que se ingresa a mano o seleccionando un punto en el mapa.
+
+## Fase 2B — Automatización
+
+1. **Recordatorios internos** (pagos, vencimientos, mantenimientos).
+2. **Notificaciones por email** (bajo costo).
+3. **Mejoras de auditoría** (visor con filtros, más acciones cubiertas).
+4. **Reportes avanzados** y tendencias.
+5. **Mapa con estadísticas por zona** (zonas con más multas).
+
+---
+
+## No prioritario / cancelado por ahora (decisión del cliente)
+
+El cliente gestiona el cobro y la comunicación por fuera del sistema y no quiere
+exponer la plataforma a los arrendatarios. Por lo tanto, queda fuera de alcance:
+
+| Funcionalidad | Estado |
 | --- | --- |
-| App nativa | Sobrecosto para flota pequeña |
-| Microservicios / Kubernetes | Sobreingeniería |
-| Scraping SIMIT/RUNT | Riesgo legal y técnico |
-| Múltiples pasarelas | Complejidad innecesaria |
-| WhatsApp Business API | Puede esperar |
-| Verificación automática de identidad | Costosa para MVP |
-| BI avanzado / mapa de calor | Poca data inicial |
+| Portal de cliente / arrendatario | Cancelado por ahora |
+| Login / autoservicio del arrendatario | Cancelado por ahora |
+| Pagos en línea | Cancelado por ahora |
+| Integración con pasarelas (Wompi, Bold, Mercado Pago, PayU, ePayco) | Cancelado por ahora |
+| Links de pago / checkout | Cancelado por ahora |
+| App móvil nativa | No prioritario |
+| WhatsApp Business API | No prioritario (se mantienen enlaces wa.me) |
+| Consulta automática SIMIT/RUNT / scraping | Descartado (riesgo legal/técnico) |
+| Multiusuario / roles avanzados | No prioritario |
+
+> Si el negocio cambia de estrategia, estas funcionalidades pueden reconsiderarse
+> en una fase posterior; el modelo de datos no impide agregarlas.

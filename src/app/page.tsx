@@ -77,7 +77,7 @@ const FAQS = [
   },
   {
     q: "¿Cómo se realizan los pagos?",
-    a: "Por ahora los pagos son manuales: efectivo, transferencia, Nequi o Bancolombia. Registramos cada pago para tu tranquilidad.",
+    a: "Los pagos se acuerdan directamente con nosotros: efectivo, transferencia, Nequi o Bancolombia. Llevamos el registro de cada pago para tu tranquilidad.",
   },
   {
     q: "¿Quién responde por las multas?",

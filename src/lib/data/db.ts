@@ -39,3 +39,20 @@ export function unwrap<T>(
   }
   return result.data as T;
 }
+
+/**
+ * Like `unwrap`, but for OPTIONAL list reads (e.g. attachment tables). On error
+ * it logs a warning and returns an empty array instead of throwing, so a
+ * not-yet-migrated optional table doesn't take down the whole page. Writes
+ * still use `unwrap` to surface failures to the user.
+ */
+export function unwrapListSafe<T>(
+  result: { data: T[] | null; error: { message: string } | null },
+  context: string,
+): T[] {
+  if (result.error) {
+    console.warn(`[Supabase] ${context} (omitido): ${result.error.message}`);
+    return [];
+  }
+  return result.data ?? [];
+}

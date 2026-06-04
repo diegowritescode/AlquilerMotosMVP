@@ -55,9 +55,9 @@ export default async function RentalsPage({
       {rentals.length === 0 ? (
         <EmptyState
           icon={FileText}
-          title="Sin alquileres"
-          description="Crea un alquiler asignando una moto a un arrendatario."
-          actionLabel="Nuevo alquiler"
+          title="Aún no hay alquileres"
+          description="Crea un alquiler asignando una moto disponible a un arrendatario. Al activarlo, la moto pasa automáticamente a “alquilada”."
+          actionLabel="Crear alquiler"
           actionHref="/app/rentals/new"
         />
       ) : (

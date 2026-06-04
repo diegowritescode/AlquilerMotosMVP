@@ -50,9 +50,9 @@ export default async function MotorcyclesPage({
       {motos.length === 0 ? (
         <EmptyState
           icon={Bike}
-          title="Sin motos"
-          description="No hay motos que coincidan. Agrega tu primera moto para empezar."
-          actionLabel="Agregar moto"
+          title="Aún no hay motos para mostrar"
+          description="Registra tu primera moto para controlar disponibilidad, documentos (SOAT, tecnomecánica), alquileres y mantenimientos desde un solo lugar."
+          actionLabel="Agregar primera moto"
           actionHref="/app/motorcycles/new"
         />
       ) : (
