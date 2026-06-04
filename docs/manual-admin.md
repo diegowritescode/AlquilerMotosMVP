@@ -3,8 +3,10 @@
 Guía práctica para el dueño del negocio. Pensada para usarse **desde el
 celular**. No necesitas conocimientos técnicos.
 
-> Consejo: agrega la página a la pantalla de inicio de tu teléfono para abrirla
-> como una app (menú del navegador → "Agregar a pantalla de inicio").
+> Consejo: **instala la app** en tu celular para abrirla como una aplicación.
+> En **Android/Chrome** aparece el botón "Instalar Moto Control" (o menú ⋮ →
+> Agregar a pantalla de inicio). En **iPhone/Safari**: Compartir → Agregar a
+> pantalla de inicio. Necesita internet para funcionar. Detalle en `docs/pwa.md`.
 
 ---
 

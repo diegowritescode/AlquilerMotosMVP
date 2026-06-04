@@ -52,6 +52,7 @@ Construido a partir del whitepaper técnico-funcional en
 - ✅ **Fotomultas** (`/app/fines`): registro manual, sugerencia de responsable por alquiler activo, **mapa OpenStreetMap/Leaflet** (vista lista/mapa, selección de ubicación, filtros por moto/arrendatario/fecha).
 - ✅ **Reportes** (`/app/reports`): ingresos, pendientes, utilización, motos por estado, multas, clientes activos, **exportación CSV** (motos, arrendatarios, alquileres, pagos, fotomultas, mantenimientos).
 - ✅ **Configuración del negocio** (`/app/settings/business`): datos del negocio usados en el acta PDF, con fallback a env.
+- ✅ **PWA instalable** (Fase 2A.5): manifest + íconos + service worker (online-first), página offline e "Instalar app". Ver [`docs/pwa.md`](docs/pwa.md).
 - ✅ **Auditoría** (`/app/settings`): tabla `audit_logs` + helper central usado en las acciones críticas.
 - ✅ **WhatsApp** en landing, detalle de cliente, detalle de alquiler y soporte.
 
@@ -236,6 +237,7 @@ API y consulta automática SIMIT/RUNT. Detalle en
 - [`docs/contracts.md`](docs/contracts.md) — acta PDF del alquiler y evidencia de entrega/devolución.
 - [`docs/exports.md`](docs/exports.md) — exportaciones CSV (qué se exporta y qué no).
 - [`docs/business-settings.md`](docs/business-settings.md) — configuración del negocio.
+- [`docs/pwa.md`](docs/pwa.md) — instalar como app (PWA), offline y caché.
 - [`docs/qa.md`](docs/qa.md) — estrategia y ejecución de pruebas.
 - [`docs/architecture.md`](docs/architecture.md) — arquitectura y estructura de carpetas.
 - [`docs/database.md`](docs/database.md) — modelo de datos y Supabase.

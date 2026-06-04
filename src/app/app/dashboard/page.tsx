@@ -23,6 +23,7 @@ import {
 import type { Tone } from "@/lib/utils";
 import { StatCard } from "@/components/app/stat-card";
 import { AlertCard } from "@/components/app/alert-card";
+import { InstallAppPrompt } from "@/components/app/install-app-prompt";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { BUSINESS_NAME } from "@/lib/constants";
 
@@ -72,6 +73,9 @@ export default async function DashboardPage() {
           un vistazo.
         </p>
       </div>
+
+      {/* Install PWA (Android/Chrome; discreto y descartable) */}
+      <InstallAppPrompt />
 
       {/* Quick actions */}
       <div>

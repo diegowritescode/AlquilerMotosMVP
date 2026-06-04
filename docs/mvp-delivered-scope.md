@@ -28,6 +28,7 @@ es un portal para arrendatarios ni una plataforma de pagos en línea.
 | Acta de alquiler | **PDF generado** (pdf-lib, versionado) + **evidencia de entrega/devolución**. Soporte operativo, no contrato legal definitivo. |
 | Reportes | Ingresos, pendientes, utilización, motos por estado, multas, clientes activos + **exportación CSV**. |
 | Configuración | **Datos del negocio** (acta PDF, fallback a env). |
+| PWA | **Instalable** (manifest + íconos + service worker online-first, página offline). No es app nativa/APK. |
 | Auditoría | Registro de acciones críticas (crear/editar/cambiar estado). |
 | WhatsApp | Enlaces wa.me configurables en landing, clientes y alquileres. |
 

@@ -33,6 +33,9 @@ Enfocada en darle más control interno al administrador.
    acta). *(2A.4 — ver docs/business-settings.md)*
 9. **Mejoras de reportes internos** (rentabilidad por moto, mora por cliente).
 
+10. ✅ **PWA instalable** (manifest, íconos, service worker online-first, página
+    offline, install prompt). *(2A.5 — ver docs/pwa.md)*
+
 > El mapa muestra **fotomultas registradas manualmente**. No consulta SIMIT/RUNT
 > ni automatiza comparendos; OpenStreetMap se usa solo para visualizar la
 > ubicación, que se ingresa a mano o seleccionando un punto en el mapa.
