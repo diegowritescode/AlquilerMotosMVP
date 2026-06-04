@@ -144,6 +144,27 @@ memoria): [`docs/database.md`](docs/database.md).
 
 ---
 
+## QA / Pruebas
+
+Pruebas E2E con **Playwright** (formularios, flujos críticos, reglas de negocio,
+persistencia) y unitarias con **Vitest**. Guía completa en
+[`docs/qa.md`](docs/qa.md).
+
+```bash
+npx playwright install chromium   # una sola vez
+npm run test:unit                 # unitarias
+npm run test:e2e                  # E2E (levanta el dev server solo, puerto 3100)
+npm run test:qa                   # lint + typecheck + build + e2e
+```
+
+- Sin variables `E2E_*`/Supabase, la suite corre en **modo demo** (login demo,
+  datos en memoria) y omite aserciones de DB.
+- Con `NEXT_PUBLIC_SUPABASE_URL` + `E2E_SUPABASE_SERVICE_ROLE_KEY`, valida
+  **persistencia real** y limpia solo los registros de prueba (prefijo `E2E`).
+- Cleanup protegido: nunca corre en producción ni sin `E2E_ALLOW_DB_CLEANUP=true`.
+
+---
+
 ## Desplegar en Vercel
 
 1. Sube el repo a GitHub.

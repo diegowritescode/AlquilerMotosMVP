@@ -45,6 +45,18 @@ const requiredNumber = z
   .transform((v) => (typeof v === "number" ? v : Number(v)))
   .pipe(z.number({ invalid_type_error: "Debe ser un número" }).nonnegative());
 
+// Reasonable motorcycle model year: 1950 .. next year.
+const yearSchema = z
+  .union([z.string(), z.number()])
+  .transform((v) => (typeof v === "number" ? v : Number(v)))
+  .pipe(
+    z
+      .number({ invalid_type_error: "Año inválido" })
+      .int("Año inválido")
+      .min(1950, "Año demasiado antiguo")
+      .max(new Date().getFullYear() + 1, "Año demasiado en el futuro"),
+  );
+
 // ---------------------------------------------------------------------------
 // Motorcycle
 // ---------------------------------------------------------------------------
@@ -53,7 +65,7 @@ export const motorcycleSchema = z.object({
   brand: z.string().trim().min(1, "La marca es obligatoria"),
   model: z.string().trim().min(1, "El modelo es obligatorio"),
   cc: requiredNumber,
-  year: requiredNumber,
+  year: yearSchema,
   plate: z
     .string()
     .trim()
