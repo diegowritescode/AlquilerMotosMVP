@@ -1,6 +1,6 @@
 /** Shared display constants and label maps for enums. */
 
-export const BUSINESS_NAME = process.env.NEXT_PUBLIC_BUSINESS_NAME || "Moto Rental";
+export const BUSINESS_NAME = process.env.NEXT_PUBLIC_BUSINESS_NAME || "Will";
 
 export const MOTORCYCLE_STATUS_LABELS: Record<string, string> = {
   disponible: "Disponible",

@@ -4,7 +4,7 @@ test.describe("Dashboard", () => {
   test("carga autenticado y muestra tarjetas principales", async ({ page }) => {
     await page.goto("/app/dashboard");
 
-    await expect(page.getByText(/Hola, Propietario/i)).toBeVisible();
+    await expect(page.getByText(/Hola, Will/i)).toBeVisible();
 
     // Quick actions.
     await expect(page.getByText("Acciones rápidas")).toBeVisible();

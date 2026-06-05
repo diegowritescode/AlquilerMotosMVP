@@ -42,8 +42,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="es" className={`${inter.variable} dark`}>
+    <html lang="es" className={inter.variable} suppressHydrationWarning>
       <body>
+        {/* Apply saved theme before paint (default dark) to avoid flash. */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html:
+              "(function(){try{var t=localStorage.getItem('theme');if(t==='light'){document.documentElement.classList.remove('dark')}else{document.documentElement.classList.add('dark')}}catch(e){document.documentElement.classList.add('dark')}})();",
+          }}
+        />
         {children}
         <PwaProvider />
       </body>

@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Bike, LogOut } from "lucide-react";
 import { Sidebar } from "./sidebar";
 import { BottomNavigation } from "./bottom-navigation";
+import { ThemeToggle } from "./theme-toggle";
 import { BUSINESS_NAME } from "@/lib/constants";
 import { logoutAction } from "@/lib/actions/auth";
 
@@ -44,6 +45,7 @@ export function AppShell({
                 {userEmail}
               </span>
             ) : null}
+            <ThemeToggle />
             <form action={logoutAction}>
               <button
                 type="submit"

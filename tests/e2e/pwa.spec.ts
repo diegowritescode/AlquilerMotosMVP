@@ -35,7 +35,26 @@ test.describe("PWA", () => {
 
   test("el dashboard carga sin romperse por el install prompt", async ({ page }) => {
     await page.goto("/app/dashboard");
-    await expect(page.getByText(/Hola, Propietario/i)).toBeVisible();
+    await expect(page.getByText(/Hola, Will/i)).toBeVisible();
     await expect(page.locator("nextjs-portal")).toHaveCount(0);
+  });
+
+  test("el toggle de tema cambia entre claro y oscuro y persiste", async ({ page }) => {
+    await page.goto("/app/dashboard");
+    const html = page.locator("html");
+    // Por defecto, oscuro.
+    await expect(html).toHaveClass(/dark/);
+
+    const toggle = page.getByRole("button", { name: /Cambiar a modo claro/i });
+    await toggle.click();
+    await expect(html).not.toHaveClass(/dark/);
+
+    // Persiste tras recargar.
+    await page.reload();
+    await expect(page.locator("html")).not.toHaveClass(/dark/);
+
+    // Volver a oscuro.
+    await page.getByRole("button", { name: /Cambiar a modo oscuro/i }).click();
+    await expect(page.locator("html")).toHaveClass(/dark/);
   });
 });

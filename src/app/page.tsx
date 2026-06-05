@@ -15,6 +15,7 @@ import { BUSINESS_NAME } from "@/lib/constants";
 import { formatCOP } from "@/lib/utils";
 import { LinkButton } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { ThemeToggle } from "@/components/app/theme-toggle";
 
 const BENEFITS = [
   {
@@ -114,12 +115,15 @@ export default async function LandingPage() {
               {BUSINESS_NAME}
             </span>
           </div>
-          <Link
-            href="/login"
-            className="text-sm font-medium text-muted hover:text-foreground"
-          >
-            Ingresar
-          </Link>
+          <div className="flex items-center gap-3">
+            <ThemeToggle />
+            <Link
+              href="/login"
+              className="text-sm font-medium text-muted hover:text-foreground"
+            >
+              Ingresar
+            </Link>
+          </div>
         </div>
       </header>
 

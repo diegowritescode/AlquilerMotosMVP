@@ -31,7 +31,7 @@ test.describe("Auth y protección de rutas", () => {
     await page.getByRole("button", { name: "Ingresar" }).click();
 
     await page.waitForURL("**/app/dashboard");
-    await expect(page.getByText(/Hola, Propietario/i)).toBeVisible();
+    await expect(page.getByText(/Hola, Will/i)).toBeVisible();
   });
 
   test("logout vuelve a /login", async ({ page }) => {

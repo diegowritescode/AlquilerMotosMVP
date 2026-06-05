@@ -66,7 +66,7 @@ export default async function DashboardPage() {
       <div>
         <p className="text-sm text-muted capitalize">{formatDateLong(todayISO())}</p>
         <h1 className="text-2xl font-bold text-foreground">
-          Hola, Propietario 👋
+          Hola, Will 👋
         </h1>
         <p className="mt-0.5 text-sm text-muted">
           Centro de control de {BUSINESS_NAME}: tu flota, pagos y vencimientos en

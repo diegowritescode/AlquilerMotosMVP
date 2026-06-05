@@ -1,9 +1,12 @@
 import type { Config } from "tailwindcss";
 
 /**
- * Dark-first design system inspired by the "Moto Rental" mockup:
- * near-black surfaces, layered dark cards, and a gold/yellow accent for actions.
+ * Theming via CSS variables (channels "R G B") so light/dark switch by toggling
+ * the `dark` class on <html>. Values live in globals.css (:root = light,
+ * .dark = dark). The gold brand accent stays the same in both modes.
  */
+const channel = (v: string) => `rgb(var(${v}) / <alpha-value>)`;
+
 const config: Config = {
   darkMode: "class",
   content: [
@@ -14,28 +17,28 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        // Surfaces
-        background: "#0a0a0b",
-        surface: "#141417",
-        "surface-2": "#1c1c21",
-        "surface-3": "#26262d",
-        border: "#2a2a31",
-        // Text
-        foreground: "#f5f5f4",
-        muted: "#9b9ba3",
-        // Brand accent (gold/yellow)
+        // Surfaces (theme-aware)
+        background: channel("--c-background"),
+        surface: channel("--c-surface"),
+        "surface-2": channel("--c-surface-2"),
+        "surface-3": channel("--c-surface-3"),
+        border: channel("--c-border"),
+        // Text (theme-aware)
+        foreground: channel("--c-foreground"),
+        muted: channel("--c-muted"),
+        // Brand accent (gold/yellow) — shared across themes
         brand: {
-          DEFAULT: "#f5c518",
+          DEFAULT: channel("--c-brand"),
           50: "#fef9e7",
           400: "#f5c518",
           500: "#eab308",
           600: "#ca9a04",
         },
-        // Semantic status colors
-        success: "#22c55e",
-        warning: "#f59e0b",
-        danger: "#ef4444",
-        info: "#3b82f6",
+        // Semantic status colors — shared across themes
+        success: channel("--c-success"),
+        warning: channel("--c-warning"),
+        danger: channel("--c-danger"),
+        info: channel("--c-info"),
       },
       borderRadius: {
         xl: "0.875rem",

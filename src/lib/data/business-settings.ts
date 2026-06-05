@@ -24,7 +24,7 @@ const TABLE = "business_settings";
 
 function defaults(): BusinessSettings {
   return {
-    business_name: process.env.NEXT_PUBLIC_BUSINESS_NAME || "Moto Rental",
+    business_name: process.env.NEXT_PUBLIC_BUSINESS_NAME || "Will",
     owner_name: null,
     owner_document: null,
     phone: null,
