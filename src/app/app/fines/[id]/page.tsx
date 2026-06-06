@@ -5,12 +5,14 @@ import { getFine } from "@/lib/data/fines";
 import { getMotorcycle } from "@/lib/data/motorcycles";
 import { getCustomer } from "@/lib/data/customers";
 import { getCamera } from "@/lib/data/cameras";
+import { updateFineStatusAction } from "@/lib/actions/fines";
+import { FINE_STATUSES } from "@/lib/types";
 import { FINE_STATUS_LABELS, FINE_STATUS_TONE } from "@/lib/constants";
 import { formatCOP, formatDate } from "@/lib/utils";
 import { PageHeader } from "@/components/app/page-header";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { InfoList } from "@/components/app/info-list";
-import { StatusBadge } from "@/components/app/status-badge";
+import { QuickStatusSelect } from "@/components/app/quick-status-select";
 import { LinkButton } from "@/components/ui/button";
 import { FinesMap } from "@/components/maps/FinesMap";
 import { osmLink } from "@/components/maps/map-utils";
@@ -58,7 +60,13 @@ export default async function FineDetailPage({
         <CardContent className="pt-4 text-center">
           <p className="text-3xl font-bold text-foreground">{formatCOP(fine.amount)}</p>
           <div className="mt-2 flex justify-center">
-            <StatusBadge value={fine.status} labels={FINE_STATUS_LABELS} tones={FINE_STATUS_TONE} />
+            <QuickStatusSelect
+              value={fine.status}
+              options={FINE_STATUSES.map((s) => ({ value: s, label: FINE_STATUS_LABELS[s] ?? s }))}
+              tones={FINE_STATUS_TONE}
+              action={updateFineStatusAction.bind(null, fine.id)}
+              ariaLabel="Cambiar estado de la multa"
+            />
           </div>
         </CardContent>
       </Card>

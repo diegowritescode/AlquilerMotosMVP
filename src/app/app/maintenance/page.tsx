@@ -75,7 +75,7 @@ export default async function MaintenancePage({
             return (
               <AlertCard
                 key={m.id}
-                href={moto ? `/app/motorcycles/${moto.id}` : undefined}
+                href={`/app/maintenance/${m.id}/edit`}
                 title={`${MAINTENANCE_TYPE_LABELS[m.type]} · ${moto ? `${moto.brand} ${moto.model}` : "Moto"}`}
                 subtitle={`${formatDate(m.date)}${m.cost ? ` · ${formatCOP(m.cost)}` : ""}${m.next_date ? ` · próx. ${formatDate(m.next_date)}` : ""}`}
                 badgeLabel={MAINTENANCE_STATUS_LABELS[m.status]}

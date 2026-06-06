@@ -11,6 +11,9 @@ import {
   deleteMotorcycleAction,
   updateMotorcycleExpirationsAction,
 } from "@/lib/actions/motorcycles";
+import { updateFineStatusAction } from "@/lib/actions/fines";
+import { updateMaintenanceStatusAction } from "@/lib/actions/maintenance";
+import { FINE_STATUSES, MAINTENANCE_STATUSES } from "@/lib/types";
 import {
   uploadMotorcyclePhotoAction,
   deleteMotorcyclePhotoAction,
@@ -41,6 +44,7 @@ import { AlertCard } from "@/components/app/alert-card";
 import { LinkButton } from "@/components/ui/button";
 import { DeleteButton } from "@/components/app/delete-button";
 import { ExpirationsEditor } from "@/components/app/expirations-editor";
+import { QuickStatusSelect } from "@/components/app/quick-status-select";
 
 export default async function MotorcycleDetailPage({
   params,
@@ -230,10 +234,19 @@ export default async function MotorcycleDetailPage({
         {maintenance.slice(0, 5).map((m) => (
           <AlertCard
             key={m.id}
+            href={`/app/maintenance/${m.id}/edit`}
             title={MAINTENANCE_TYPE_LABELS[m.type] ?? m.type}
             subtitle={`${formatDate(m.date)}${m.cost ? ` · ${formatCOP(m.cost)}` : ""}`}
-            badgeLabel={MAINTENANCE_STATUS_LABELS[m.status]}
             tone={MAINTENANCE_STATUS_TONE[m.status]}
+            right={
+              <QuickStatusSelect
+                value={m.status}
+                options={MAINTENANCE_STATUSES.map((s) => ({ value: s, label: MAINTENANCE_STATUS_LABELS[s] ?? s }))}
+                tones={MAINTENANCE_STATUS_TONE}
+                action={updateMaintenanceStatusAction.bind(null, m.id)}
+                ariaLabel="Cambiar estado del mantenimiento"
+              />
+            }
           />
         ))}
       </HistorySection>
@@ -269,8 +282,16 @@ export default async function MotorcycleDetailPage({
             href={`/app/fines/${f.id}`}
             title={f.reason}
             subtitle={`${formatDate(f.date)} · ${formatCOP(f.amount)}`}
-            badgeLabel={FINE_STATUS_LABELS[f.status]}
             tone={FINE_STATUS_TONE[f.status]}
+            right={
+              <QuickStatusSelect
+                value={f.status}
+                options={FINE_STATUSES.map((s) => ({ value: s, label: FINE_STATUS_LABELS[s] ?? s }))}
+                tones={FINE_STATUS_TONE}
+                action={updateFineStatusAction.bind(null, f.id)}
+                ariaLabel="Cambiar estado de la multa"
+              />
+            }
           />
         ))}
       </HistorySection>

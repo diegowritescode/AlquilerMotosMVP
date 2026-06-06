@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { maintenanceSchema, formToObject } from "@/lib/schemas";
+import { MAINTENANCE_STATUSES, type MaintenanceStatus } from "@/lib/types";
 import { createMaintenance, updateMaintenance } from "@/lib/data/maintenance";
 import { recordAudit } from "@/lib/data/audit";
 import { type ActionState, parseErrors } from "./shared";
@@ -38,5 +39,29 @@ export async function updateMaintenanceAction(
   if (!record) return { error: "Mantenimiento no encontrado." };
   await recordAudit({ entityType: "maintenance", entityId: id, action: "editar" });
   revalidatePath("/app/maintenance");
+  revalidatePath(`/app/motorcycles/${record.motorcycle_id}`);
+  revalidatePath("/app/dashboard");
   redirect("/app/maintenance");
+}
+
+/** Quick inline status change (e.g. "ya se hizo"). Returns a plain result, no redirect. */
+export async function updateMaintenanceStatusAction(
+  id: string,
+  status: string,
+): Promise<{ ok?: boolean; error?: string }> {
+  if (!MAINTENANCE_STATUSES.includes(status as MaintenanceStatus)) {
+    return { error: "Estado inválido." };
+  }
+  const record = await updateMaintenance(id, { status: status as MaintenanceStatus });
+  if (!record) return { error: "Mantenimiento no encontrado." };
+  await recordAudit({
+    entityType: "maintenance",
+    entityId: id,
+    action: "cambiar_estado",
+    after: { status },
+  });
+  revalidatePath("/app/maintenance");
+  revalidatePath(`/app/motorcycles/${record.motorcycle_id}`);
+  revalidatePath("/app/dashboard");
+  return { ok: true };
 }

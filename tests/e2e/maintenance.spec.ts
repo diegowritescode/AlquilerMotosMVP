@@ -44,4 +44,35 @@ test.describe.serial("Mantenimientos", () => {
     await page.goto("/app/expirations");
     await expect(page.getByText(new RegExp(moto.plate)).first()).toBeVisible();
   });
+
+  test("marcar 'realizado' con el selector rápido (detalle de moto)", async ({ page }) => {
+    await page.goto(`/app/motorcycles/${motoId}`);
+    const select = page.getByLabel("Cambiar estado del mantenimiento").first();
+    await expect(select).toHaveValue("programado");
+    await select.selectOption("realizado");
+    await expect(select).toBeEnabled(); // terminó el guardado
+    await page.reload();
+    await expect(
+      page.getByLabel("Cambiar estado del mantenimiento").first(),
+    ).toHaveValue("realizado");
+  });
+
+  test("editar mantenimiento en la página que faltaba (costo persiste)", async ({ page }) => {
+    await page.goto(`/app/motorcycles/${motoId}`);
+    // Localizador inequívoco: el link de la tarjeta de mantenimiento apunta a
+    // /app/maintenance/<id>/edit (evita el "Cambio de aceite" de vencimientos).
+    // La navegación es client-side (<Link>): usar toHaveURL (polling).
+    await page.locator('a[href*="/app/maintenance/"][href$="/edit"]').first().click();
+    await expect(page).toHaveURL(/\/app\/maintenance\/[0-9a-fA-F-]+\/edit$/);
+    const editUrl = page.url();
+    await expect(page.getByRole("heading", { name: "Editar mantenimiento" })).toBeVisible();
+    // Sanity: el form viene prellenado (la moto del registro está seleccionada).
+    await expect(page.getByLabel("Moto")).not.toHaveValue("");
+    await page.getByLabel("Costo (COP)").fill("99000");
+    await page.getByRole("button", { name: "Guardar cambios" }).click();
+    await expect(page).toHaveURL(/\/app\/maintenance$/);
+    // Reabrir el mismo registro y confirmar persistencia.
+    await page.goto(editUrl);
+    await expect(page.getByLabel("Costo (COP)")).toHaveValue("99000");
+  });
 });

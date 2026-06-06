@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { fineSchema, formToObject } from "@/lib/schemas";
+import { FINE_STATUSES, type FineStatus } from "@/lib/types";
 import { createFine, updateFine } from "@/lib/data/fines";
 import { rentalForMotorcycleOnDate } from "@/lib/data/rentals";
 import { recordAudit } from "@/lib/data/audit";
@@ -53,4 +54,27 @@ export async function updateFineAction(
   revalidatePath("/app/fines");
   revalidatePath(`/app/fines/${id}`);
   redirect(`/app/fines/${id}`);
+}
+
+/** Quick inline status change (no full form). Returns a plain result, no redirect. */
+export async function updateFineStatusAction(
+  id: string,
+  status: string,
+): Promise<{ ok?: boolean; error?: string }> {
+  if (!FINE_STATUSES.includes(status as FineStatus)) {
+    return { error: "Estado inválido." };
+  }
+  const fine = await updateFine(id, { status: status as FineStatus });
+  if (!fine) return { error: "Multa no encontrada." };
+  await recordAudit({
+    entityType: "fine",
+    entityId: id,
+    action: "cambiar_estado",
+    after: { status },
+  });
+  revalidatePath("/app/fines");
+  revalidatePath(`/app/fines/${id}`);
+  revalidatePath(`/app/motorcycles/${fine.motorcycle_id}`);
+  revalidatePath("/app/dashboard");
+  return { ok: true };
 }

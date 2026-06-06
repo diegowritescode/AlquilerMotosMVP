@@ -11,6 +11,7 @@ test.describe.serial("Fotomultas / infracciones", () => {
   const cust = customerData();
   let motoId = "";
   let custId = "";
+  let fineId = "";
 
   test("preparar moto, cliente y alquiler activo", async ({ page }) => {
     await page.goto("/app/motorcycles/new");
@@ -47,6 +48,7 @@ test.describe.serial("Fotomultas / infracciones", () => {
     await page.getByRole("button", { name: "Registrar multa" }).click();
 
     await page.waitForURL(/\/app\/fines\/[0-9a-fA-F-]+$/);
+    fineId = page.url().split("/").pop()!;
     await expect(page.getByText("E2E Exceso de velocidad").first()).toBeVisible();
     // Responsable sugerido automáticamente desde el alquiler activo.
     await expect(page.getByText(cust.full_name).first()).toBeVisible();
@@ -55,6 +57,16 @@ test.describe.serial("Fotomultas / infracciones", () => {
   test("la multa aparece en el listado", async ({ page }) => {
     await page.goto("/app/fines");
     await expect(page.getByText("E2E Exceso de velocidad").first()).toBeVisible();
+  });
+
+  test("cambio rápido de estado en el detalle (sin abrir el formulario)", async ({ page }) => {
+    await page.goto(`/app/fines/${fineId}`);
+    const select = page.getByLabel("Cambiar estado de la multa");
+    await expect(select).toHaveValue("pendiente");
+    await select.selectOption("pagada");
+    await expect(select).toBeEnabled(); // terminó el guardado (transición)
+    await page.reload();
+    await expect(page.getByLabel("Cambiar estado de la multa")).toHaveValue("pagada");
   });
 
   test("la multa aparece en el detalle de la moto", async ({ page }) => {
