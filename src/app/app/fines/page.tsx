@@ -1,7 +1,8 @@
-import { AlertTriangle, MapPin, Plus } from "lucide-react";
+import { AlertTriangle, Camera, MapPin, Plus } from "lucide-react";
 import { listFines } from "@/lib/data/fines";
 import { listMotorcycles } from "@/lib/data/motorcycles";
 import { listCustomers } from "@/lib/data/customers";
+import { listCameras } from "@/lib/data/cameras";
 import type { FineStatus } from "@/lib/types";
 import { FINE_STATUS_LABELS, FINE_STATUS_TONE } from "@/lib/constants";
 import { formatCOP, formatDate } from "@/lib/utils";
@@ -12,7 +13,9 @@ import { EmptyState } from "@/components/app/empty-state";
 import { LinkButton } from "@/components/ui/button";
 import { FinesControls } from "./fines-controls";
 import { FinesMap } from "@/components/maps/FinesMap";
+import { CamerasMap } from "@/components/maps/CamerasMap";
 import { MapEmptyState } from "@/components/maps/MapEmptyState";
+import { toMapCameras } from "@/components/maps/map-utils";
 import type { MapFine } from "@/components/maps/types";
 
 export const metadata = { title: "Fotomultas" };
@@ -39,7 +42,8 @@ export default async function FinesPage({
   };
 }) {
   const status = (searchParams.status as FineStatus | "todos") ?? "todos";
-  const [allFines, motos, customers] = await Promise.all([
+  const isCameras = searchParams.view === "camaras";
+  const [allFines, motos, customers, cameras] = await Promise.all([
     listFines({
       status,
       motorcycleId: searchParams.motorcycle,
@@ -47,7 +51,9 @@ export default async function FinesPage({
     }),
     listMotorcycles(),
     listCustomers(),
+    listCameras(),
   ]);
+  const mapCameras = toMapCameras(cameras);
 
   // Date-range filter (applied to list and map alike).
   const fines = allFines.filter((f) => {
@@ -99,14 +105,33 @@ export default async function FinesPage({
         customers={customers.map((c) => ({ id: c.id, label: c.full_name }))}
       />
 
-      <p className="flex items-center gap-1.5 text-xs text-muted">
-        <MapPin className="h-3.5 w-3.5 text-brand" />
-        {fines.length} multa{fines.length === 1 ? "" : "s"} · {mapFines.length} con
-        ubicación
-      </p>
+      {isCameras ? (
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <p className="flex items-center gap-1.5 text-xs text-muted">
+            <Camera className="h-3.5 w-3.5 text-brand" />
+            {mapCameras.length} cámaras de fotomulta en Medellín · ubicaciones
+            aproximadas
+          </p>
+          <LinkButton href="/app/fines/cameras" size="sm" variant="secondary">
+            <Camera className="h-4 w-4" /> Gestionar cámaras
+          </LinkButton>
+        </div>
+      ) : (
+        <p className="flex items-center gap-1.5 text-xs text-muted">
+          <MapPin className="h-3.5 w-3.5 text-brand" />
+          {fines.length} multa{fines.length === 1 ? "" : "s"} · {mapFines.length} con
+          ubicación
+        </p>
+      )}
 
-      {/* Map view */}
-      {isMap ? (
+      {/* Cameras view */}
+      {isCameras ? (
+        mapCameras.length > 0 ? (
+          <CamerasMap cameras={mapCameras} />
+        ) : (
+          <MapEmptyState />
+        )
+      ) : isMap ? (
         mapFines.length > 0 ? (
           <FinesMap fines={mapFines} />
         ) : (

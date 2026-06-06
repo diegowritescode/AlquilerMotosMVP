@@ -1,6 +1,7 @@
 "use client";
 
 import { useFormState } from "react-dom";
+import { useState } from "react";
 import { Info } from "lucide-react";
 import type { Customer, Fine, Motorcycle } from "@/lib/types";
 import { FINE_STATUSES } from "@/lib/types";
@@ -10,6 +11,7 @@ import { Field, Input, Select, Textarea, FormSection } from "@/components/ui/for
 import { SubmitButton } from "@/components/app/submit-button";
 import { FormMessage } from "@/components/app/form-message";
 import { FineLocationPicker } from "@/components/maps/FineLocationPicker";
+import type { MapCamera } from "@/components/maps/types";
 
 type Action = (prev: ActionState, formData: FormData) => Promise<ActionState>;
 
@@ -18,6 +20,7 @@ export function FineForm({
   fine,
   motorcycles,
   customers,
+  cameras = [],
   submitLabel,
   defaultMotorcycleId,
 }: {
@@ -25,12 +28,25 @@ export function FineForm({
   fine?: Fine;
   motorcycles: Pick<Motorcycle, "id" | "brand" | "model" | "plate">[];
   customers: Pick<Customer, "id" | "full_name" | "document_number">[];
+  cameras?: MapCamera[];
   submitLabel: string;
   defaultMotorcycleId?: string;
 }) {
   const [state, formAction] = useFormState(action, {} as ActionState);
   const f = fine;
   const err = state.fieldErrors ?? {};
+
+  // Controlled so a picked camera can autocomplete them.
+  const [reason, setReason] = useState(f?.reason ?? "");
+  const [locationText, setLocationText] = useState(f?.location_text ?? "");
+
+  // Associating a camera fills the location with its name and, when the reason
+  // is still empty, suggests one from the camera type. Never overwrites a
+  // reason the user already typed.
+  const handleCameraPick = (cam: MapCamera) => {
+    setLocationText(cam.name);
+    setReason((prev) => (prev.trim() ? prev : cam.typeLabel));
+  };
 
   return (
     <form action={formAction} className="space-y-5">
@@ -74,7 +90,7 @@ export function FineForm({
           <Input id="amount" name="amount" type="number" defaultValue={f?.amount} required />
         </Field>
         <Field label="Motivo" htmlFor="reason" required error={err.reason?.[0]} className="sm:col-span-2">
-          <Input id="reason" name="reason" defaultValue={f?.reason} placeholder="Exceso de velocidad, semáforo en rojo..." required />
+          <Input id="reason" name="reason" value={reason} onChange={(e) => setReason(e.target.value)} placeholder="Exceso de velocidad, semáforo en rojo..." required />
         </Field>
         <Field label="Estado" htmlFor="status" required>
           <Select id="status" name="status" defaultValue={f?.status ?? "pendiente"}>
@@ -84,9 +100,15 @@ export function FineForm({
           </Select>
         </Field>
         <Field label="Ubicación (texto)" htmlFor="location_text" className="sm:col-span-2">
-          <Input id="location_text" name="location_text" defaultValue={f?.location_text ?? ""} placeholder="Cl. 30 con Cra. 65, El Poblado" />
+          <Input id="location_text" name="location_text" value={locationText} onChange={(e) => setLocationText(e.target.value)} placeholder="Cl. 30 con Cra. 65, El Poblado" />
         </Field>
-        <FineLocationPicker defaultLat={f?.lat ?? null} defaultLng={f?.lng ?? null} />
+        <FineLocationPicker
+          defaultLat={f?.lat ?? null}
+          defaultLng={f?.lng ?? null}
+          cameras={cameras}
+          defaultCameraId={f?.camera_id ?? null}
+          onCameraPick={handleCameraPick}
+        />
         <Field label="Observaciones" htmlFor="notes" className="sm:col-span-2">
           <Textarea id="notes" name="notes" defaultValue={f?.notes ?? ""} />
         </Field>

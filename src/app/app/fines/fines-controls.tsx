@@ -1,7 +1,7 @@
 "use client";
 
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { List, MapPin } from "lucide-react";
+import { List, MapPin, Camera } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Select, Input } from "@/components/ui/form";
 
@@ -26,7 +26,8 @@ export function FinesControls({
   const pathname = usePathname();
   const params = useSearchParams();
 
-  const view = params.get("view") === "mapa" ? "mapa" : "lista";
+  const rawView = params.get("view");
+  const view = rawView === "mapa" || rawView === "camaras" ? rawView : "lista";
 
   const setParam = (key: string, value: string) => {
     const next = new URLSearchParams(Array.from(params.entries()));
@@ -58,6 +59,16 @@ export function FinesControls({
           )}
         >
           <MapPin className="h-4 w-4" /> Mapa
+        </button>
+        <button
+          type="button"
+          onClick={() => setParam("view", "camaras")}
+          className={cn(
+            "inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm transition-colors",
+            view === "camaras" ? "bg-brand/15 font-medium text-brand" : "text-muted",
+          )}
+        >
+          <Camera className="h-4 w-4" /> Cámaras
         </button>
       </div>
 

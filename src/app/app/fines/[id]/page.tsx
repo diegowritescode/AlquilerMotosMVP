@@ -4,6 +4,7 @@ import { FileWarning, MapPin, Pencil } from "lucide-react";
 import { getFine } from "@/lib/data/fines";
 import { getMotorcycle } from "@/lib/data/motorcycles";
 import { getCustomer } from "@/lib/data/customers";
+import { getCamera } from "@/lib/data/cameras";
 import { FINE_STATUS_LABELS, FINE_STATUS_TONE } from "@/lib/constants";
 import { formatCOP, formatDate } from "@/lib/utils";
 import { PageHeader } from "@/components/app/page-header";
@@ -27,9 +28,10 @@ export default async function FineDetailPage({
   const fine = await getFine(params.id);
   if (!fine) notFound();
 
-  const [moto, customer] = await Promise.all([
+  const [moto, customer, camera] = await Promise.all([
     getMotorcycle(fine.motorcycle_id),
     fine.customer_id ? getCustomer(fine.customer_id) : Promise.resolve(null),
+    fine.camera_id ? getCamera(fine.camera_id) : Promise.resolve(null),
   ]);
 
   const hasCoords = typeof fine.lat === "number" && typeof fine.lng === "number";
@@ -87,6 +89,14 @@ export default async function FineDetailPage({
               { label: "Fecha", value: formatDate(fine.date) },
               { label: "Motivo", value: fine.reason },
               { label: "Ubicación", value: fine.location_text ?? "—" },
+              {
+                label: "Cámara",
+                value: camera ? (
+                  <Link href={`/app/fines/cameras/${camera.id}/edit`} className="text-brand hover:underline">
+                    {camera.name}
+                  </Link>
+                ) : "—",
+              },
               { label: "Observaciones", value: fine.notes ?? "—" },
             ]}
           />

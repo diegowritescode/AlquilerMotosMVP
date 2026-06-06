@@ -6,6 +6,7 @@ import type {
   Motorcycle,
   Payment,
   Rental,
+  TrafficCamera,
 } from "../types";
 import { buildSeed } from "./seed";
 
@@ -24,6 +25,7 @@ export interface MockDB {
   payments: Payment[];
   maintenance: MaintenanceRecord[];
   fines: Fine[];
+  cameras: TrafficCamera[];
   auditLogs: AuditLog[];
 }
 

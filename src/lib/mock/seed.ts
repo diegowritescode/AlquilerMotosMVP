@@ -7,7 +7,9 @@ import type {
   Motorcycle,
   Payment,
   Rental,
+  TrafficCamera,
 } from "../types";
+import { MEDELLIN_CAMERAS } from "../data/medellin-cameras-seed";
 
 /**
  * Seed data for the demo / in-memory mode. Fictional people and plates only.
@@ -522,6 +524,15 @@ export function buildSeed() {
     },
   ];
 
+  // Official Medellín photo-detection points (geocoded, approximate). Editable
+  // in-app via the CRUD; coordinates can be refined by the operator.
+  const cameras: TrafficCamera[] = MEDELLIN_CAMERAS.map((c) => ({
+    ...c,
+    created_at: ts(subDays(now, 1)),
+    updated_at: ts(subDays(now, 1)),
+    deleted_at: null,
+  }));
+
   const auditLogs: AuditLog[] = [
     {
       id: "77777777-7777-4777-8777-000000000001",
@@ -536,5 +547,5 @@ export function buildSeed() {
     },
   ];
 
-  return { motorcycles, customers, rentals, payments, maintenance, fines, auditLogs };
+  return { motorcycles, customers, rentals, payments, maintenance, fines, cameras, auditLogs };
 }

@@ -2,6 +2,8 @@ import { notFound } from "next/navigation";
 import { getFine } from "@/lib/data/fines";
 import { listMotorcycles } from "@/lib/data/motorcycles";
 import { listCustomers } from "@/lib/data/customers";
+import { listCameras } from "@/lib/data/cameras";
+import { toMapCameras } from "@/components/maps/map-utils";
 import { PageHeader } from "@/components/app/page-header";
 import { FineForm } from "../../fine-form";
 import { updateFineAction } from "@/lib/actions/fines";
@@ -16,9 +18,10 @@ export default async function EditFinePage({
   const fine = await getFine(params.id);
   if (!fine) notFound();
 
-  const [motos, customers] = await Promise.all([
+  const [motos, customers, cameras] = await Promise.all([
     listMotorcycles(),
     listCustomers(),
+    listCameras(),
   ]);
 
   const action = updateFineAction.bind(null, fine.id);
@@ -31,6 +34,7 @@ export default async function EditFinePage({
         fine={fine}
         motorcycles={motos}
         customers={customers}
+        cameras={toMapCameras(cameras)}
         submitLabel="Guardar cambios"
       />
     </div>

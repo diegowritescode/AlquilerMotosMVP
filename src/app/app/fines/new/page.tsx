@@ -1,6 +1,8 @@
 import { Bike } from "lucide-react";
 import { listMotorcycles } from "@/lib/data/motorcycles";
 import { listCustomers } from "@/lib/data/customers";
+import { listCameras } from "@/lib/data/cameras";
+import { toMapCameras } from "@/components/maps/map-utils";
 import { PageHeader } from "@/components/app/page-header";
 import { EmptyState } from "@/components/app/empty-state";
 import { FineForm } from "../fine-form";
@@ -13,9 +15,10 @@ export default async function NewFinePage({
 }: {
   searchParams: { motorcycle?: string };
 }) {
-  const [motos, customers] = await Promise.all([
+  const [motos, customers, cameras] = await Promise.all([
     listMotorcycles(),
     listCustomers(),
+    listCameras(),
   ]);
 
   if (motos.length === 0) {
@@ -39,6 +42,7 @@ export default async function NewFinePage({
         action={createFineAction}
         motorcycles={motos}
         customers={customers}
+        cameras={toMapCameras(cameras)}
         submitLabel="Registrar multa"
         defaultMotorcycleId={searchParams.motorcycle}
       />

@@ -56,6 +56,15 @@ export const FINE_STATUS_LABELS: Record<string, string> = {
   asumida_dueno: "Asumida por dueño",
 };
 
+export const CAMERA_TYPE_LABELS: Record<string, string> = {
+  velocidad: "Velocidad",
+  semaforo_rojo: "Semáforo en rojo",
+  cebra: "Cruce / cebra",
+  pico_y_placa: "Pico y placa",
+  soat_tecnomecanica: "SOAT / Tecnomecánica",
+  mixta: "Mixta (varias)",
+};
+
 export const PAYMENT_FREQUENCY_LABELS: Record<string, string> = {
   diario: "Diario",
   semanal: "Semanal",
@@ -105,6 +114,15 @@ export const FINE_STATUS_TONE: Record<string, Tone> = {
   en_disputa: "info",
   asumida_cliente: "neutral",
   asumida_dueno: "neutral",
+};
+
+export const CAMERA_TYPE_TONE: Record<string, Tone> = {
+  velocidad: "info",
+  semaforo_rojo: "danger",
+  cebra: "warning",
+  pico_y_placa: "neutral",
+  soat_tecnomecanica: "neutral",
+  mixta: "warning",
 };
 
 export const CONDITION_TONE: Record<string, Tone> = {

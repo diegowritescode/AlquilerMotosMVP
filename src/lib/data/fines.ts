@@ -46,11 +46,16 @@ export async function getFine(id: string): Promise<Fine | null> {
 export async function createFine(input: FineInput): Promise<Fine> {
   const supabase = getDataClient();
   if (!supabase) return createFineMock(input);
-  const payload = {
-    ...input,
+  // Omit camera_id when unset so the insert stays compatible with databases
+  // where the optional `camera_id` column has not been added yet (migration
+  // 0006). It is included only when a camera was actually linked.
+  const { camera_id, ...rest } = input;
+  const payload: Record<string, unknown> = {
+    ...rest,
     customer_id: input.customer_id ?? null,
     rental_id: input.rental_id ?? null,
   };
+  if (camera_id) payload.camera_id = camera_id;
   const res = await supabase.from(TABLE).insert(payload).select().single();
   return unwrap(res, "createFine") as Fine;
 }
@@ -61,9 +66,13 @@ export async function updateFine(
 ): Promise<Fine | null> {
   const supabase = getDataClient();
   if (!supabase) return updateFineMock(id, input);
+  // See createFine: only send camera_id when linking to a camera.
+  const { camera_id, ...rest } = input;
+  const payload: Record<string, unknown> = { ...rest };
+  if (camera_id) payload.camera_id = camera_id;
   const res = await supabase
     .from(TABLE)
-    .update(input)
+    .update(payload)
     .eq("id", id)
     .select()
     .maybeSingle();

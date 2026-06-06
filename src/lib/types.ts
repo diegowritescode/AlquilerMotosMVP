@@ -81,6 +81,18 @@ export const FINE_STATUSES = [
 ] as const;
 export type FineStatus = (typeof FINE_STATUSES)[number];
 
+// Photo-detection camera types (fotodetección). Cameras physically rotate
+// across authorized points, so most are speed/mixed; type is editable per point.
+export const CAMERA_TYPES = [
+  "velocidad",
+  "semaforo_rojo",
+  "cebra",
+  "pico_y_placa",
+  "soat_tecnomecanica",
+  "mixta",
+] as const;
+export type CameraType = (typeof CAMERA_TYPES)[number];
+
 export const VEHICLE_DOCUMENT_TYPES = [
   "soat",
   "tecnomecanica",
@@ -198,6 +210,26 @@ export interface Fine extends Timestamps {
   lng?: number | null;
   status: FineStatus;
   evidence_url?: string | null;
+  notes?: string | null;
+  // Optional link to the photo-detection camera the infraction is attributed to.
+  camera_id?: string | null;
+}
+
+/**
+ * Photo-detection camera (fotomulta) location in Medellín. Seeded from the
+ * official authorized-points list; coordinates are geocoded and `approximate`.
+ * Editable by the operator (CRUD) since cameras rotate physically over points.
+ */
+export interface TrafficCamera extends Timestamps {
+  id: string;
+  name: string;
+  type: CameraType;
+  lat: number;
+  lng: number;
+  zone?: string | null;
+  max_speed_kmh?: number | null;
+  approximate: boolean;
+  source?: string | null;
   notes?: string | null;
 }
 

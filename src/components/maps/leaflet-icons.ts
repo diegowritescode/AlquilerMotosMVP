@@ -17,3 +17,36 @@ export function goldPin(): L.DivIcon {
     popupAnchor: [0, -26],
   });
 }
+
+// Fill color per camera type (hex; mirrors CAMERA_TYPE_TONE conceptually).
+const CAMERA_COLORS: Record<string, string> = {
+  velocidad: "#2563eb", // info / blue
+  semaforo_rojo: "#dc2626", // danger / red
+  cebra: "#d97706", // warning / amber
+  pico_y_placa: "#6b7280", // neutral / gray
+  soat_tecnomecanica: "#6b7280",
+  mixta: "#7c3aed", // violet (varias)
+};
+
+/**
+ * Camera pin (fotodetección). A rounded marker with an inline camera glyph,
+ * colored by type. Same "no external asset" approach as `goldPin()` — import
+ * ONLY from inner map components loaded via `dynamic(..., { ssr: false })`.
+ */
+export function cameraPin(type?: string, opts?: { selected?: boolean }): L.DivIcon {
+  const fill = (type && CAMERA_COLORS[type]) || "#2563eb";
+  const ring = opts?.selected ? `<circle cx="14" cy="14" r="13" fill="none" stroke="#f5c518" stroke-width="2"/>` : "";
+  return L.divIcon({
+    className: "moto-rental-camera-pin",
+    html: `<svg width="30" height="30" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+      ${ring}
+      <circle cx="14" cy="14" r="11" fill="${fill}" stroke="#ffffff" stroke-width="2"/>
+      <rect x="8" y="11" width="9" height="7" rx="1.4" fill="#ffffff"/>
+      <path d="M17 13l3-1.6v5.2L17 15z" fill="#ffffff"/>
+      <circle cx="12.2" cy="14.5" r="1.9" fill="${fill}"/>
+    </svg>`,
+    iconSize: [30, 30],
+    iconAnchor: [15, 15],
+    popupAnchor: [0, -14],
+  });
+}

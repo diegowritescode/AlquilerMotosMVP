@@ -1,5 +1,6 @@
 import { z } from "zod";
 import {
+  CAMERA_TYPES,
   CONDITION_LEVELS,
   DOCUMENT_TYPES,
   FINE_STATUSES,
@@ -199,8 +200,39 @@ export const fineSchema = z.object({
   status: z.enum(FINE_STATUSES),
   evidence_url: optionalString,
   notes: optionalString,
+  camera_id: optionalString,
 });
 export type FineInput = z.infer<typeof fineSchema>;
+
+// ---------------------------------------------------------------------------
+// Traffic camera (fotodetección)
+// ---------------------------------------------------------------------------
+
+// Coordinate: coerced finite number that ALLOWS negatives (longitude < 0).
+// Empty string -> NaN so a missing required coordinate is rejected.
+const coordNumber = z
+  .union([z.string(), z.number()])
+  .transform((v) => {
+    if (v === "" || v === null || v === undefined) return Number.NaN;
+    return typeof v === "number" ? v : Number(v);
+  })
+  .pipe(z.number({ invalid_type_error: "Coordenada inválida" }).finite("Coordenada inválida"));
+
+export const trafficCameraSchema = z.object({
+  name: z.string().trim().min(1, "El nombre/ubicación es obligatorio"),
+  type: z.enum(CAMERA_TYPES),
+  lat: coordNumber,
+  lng: coordNumber,
+  zone: optionalString,
+  max_speed_kmh: optionalNumber,
+  approximate: z
+    .union([z.string(), z.boolean()])
+    .optional()
+    .transform((v) => v === true || v === "true" || v === "on"),
+  source: optionalString,
+  notes: optionalString,
+});
+export type TrafficCameraInput = z.infer<typeof trafficCameraSchema>;
 
 // ---------------------------------------------------------------------------
 // Business settings

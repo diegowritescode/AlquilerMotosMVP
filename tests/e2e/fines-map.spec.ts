@@ -63,4 +63,32 @@ test.describe.serial("Fotomultas — mapa y ubicación", () => {
       page.getByRole("heading", { name: /Fotomultas/i }),
     ).toBeVisible();
   });
+
+  // NOTA: estas pruebas son robustas a que la tabla traffic_cameras esté vacía
+  // (p.ej. antes de aplicar la migración 0006). Validan que las vistas cargan
+  // sin error; el render del mapa con marcadores requiere datos sembrados.
+  test("la vista de Cámaras muestra el mapa de fotodetección con datos", async ({ page }) => {
+    await page.goto("/app/fines");
+    await page.getByRole("button", { name: "Cámaras" }).click();
+    await expect(page).toHaveURL(/view=camaras/);
+    await expect(page.getByText(/cámaras de fotomulta en Medellín/i)).toBeVisible();
+    // Con la migración 0006 aplicada hay puntos sembrados -> el mapa renderiza.
+    await expect(page.getByTestId("cameras-map")).toBeVisible();
+    await expect(page.locator("nextjs-portal")).toHaveCount(0);
+  });
+
+  test("el CRUD de cámaras lista y permite agregar", async ({ page }) => {
+    await page.goto("/app/fines/cameras");
+    await expect(page.getByRole("heading", { name: /Cámaras de fotomulta/i })).toBeVisible();
+    await page.getByRole("link", { name: /Agregar cámara/i }).first().click();
+    await page.waitForURL(/\/app\/fines\/cameras\/new$/);
+    await expect(page.getByLabel(/Nombre \/ ubicación/i)).toBeVisible();
+    await expect(page.getByLabel("Tipo")).toBeVisible();
+  });
+
+  test("el picker del formulario menciona las cámaras cercanas", async ({ page }) => {
+    await page.goto(`/app/fines/new?motorcycle=${motoId}`);
+    await expect(page.getByTestId("fine-location-picker")).toBeVisible();
+    await expect(page.getByText(/cámara de fotomulta cercana/i)).toBeVisible();
+  });
 });

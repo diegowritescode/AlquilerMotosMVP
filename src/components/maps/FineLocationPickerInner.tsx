@@ -2,9 +2,10 @@
 
 import "leaflet/dist/leaflet.css";
 import { useEffect } from "react";
-import { MapContainer, Marker, TileLayer, useMap, useMapEvents } from "react-leaflet";
+import { MapContainer, Marker, Popup, TileLayer, useMap, useMapEvents } from "react-leaflet";
 import { MEDELLIN_CENTER, OSM_ATTRIBUTION, OSM_TILE_URL } from "./map-utils";
-import { goldPin } from "./leaflet-icons";
+import { goldPin, cameraPin } from "./leaflet-icons";
+import type { MapCamera } from "./types";
 
 function ClickHandler({ onPick }: { onPick: (lat: number, lng: number) => void }) {
   useMapEvents({
@@ -32,11 +33,17 @@ export default function FineLocationPickerInner({
   lng,
   onPick,
   recenterToken,
+  cameras,
+  selectedCameraId,
+  onCameraPick,
 }: {
   lat: number | null;
   lng: number | null;
   onPick: (lat: number, lng: number) => void;
   recenterToken: number;
+  cameras: MapCamera[];
+  selectedCameraId: string | null;
+  onCameraPick: (cam: MapCamera) => void;
 }) {
   const hasPoint = lat !== null && lng !== null;
   const center: [number, number] = hasPoint ? [lat, lng] : MEDELLIN_CENTER;
@@ -51,6 +58,31 @@ export default function FineLocationPickerInner({
       <TileLayer url={OSM_TILE_URL} attribution={OSM_ATTRIBUTION} />
       <ClickHandler onPick={onPick} />
       <Recenter token={recenterToken} />
+      {cameras.map((c) => (
+        <Marker
+          key={c.id}
+          position={[c.lat, c.lng]}
+          icon={cameraPin(c.type, { selected: c.id === selectedCameraId })}
+          eventHandlers={{ click: () => onCameraPick(c) }}
+        >
+          <Popup>
+            <div className="space-y-1 text-sm">
+              <p className="font-semibold">{c.name}</p>
+              <p className="text-xs">
+                {c.typeLabel}
+                {c.maxSpeedKmh ? ` · Máx ${c.maxSpeedKmh} km/h` : ""}
+              </p>
+              <button
+                type="button"
+                onClick={() => onCameraPick(c)}
+                className="mt-1 text-xs font-medium underline"
+              >
+                Asociar esta cámara
+              </button>
+            </div>
+          </Popup>
+        </Marker>
+      ))}
       {hasPoint ? <Marker position={[lat, lng]} icon={goldPin()} /> : null}
     </MapContainer>
   );
